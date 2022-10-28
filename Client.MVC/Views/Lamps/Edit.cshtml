@@ -1,0 +1,95 @@
+﻿@model MySmartHomeWebApi.Models.Lamps
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Lamps</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        @*<form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="DateTimeUpdate" class="control-label"></label>
+                <input asp-for="DateTimeUpdate" class="form-control" />
+                <span asp-validation-for="DateTimeUpdate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Status" /> @Html.DisplayNameFor(model => model.Status)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="TopicUp" class="control-label"></label>
+                <input asp-for="TopicUp" class="form-control" />
+                <span asp-validation-for="TopicUp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TopicDown" class="control-label"></label>
+                <input asp-for="TopicDown" class="form-control" />
+                <span asp-validation-for="TopicDown" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>*@
+
+        @using (Html.BeginForm("Edit", "Lamps", FormMethod.Post, new { @class = "form-control" }))
+        {
+            <div class="form-group">
+                <input type="hidden" for="Id" />
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m=>m.Name, "Название", new { @class = "col-md-2 control-label" })<br />
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            </div>
+
+            <br />
+            <div class="form-group">
+                @Html.LabelFor(m=>m.TopicUp, "TopicUp", new { @class = "col-md-2 control-label" })<br />
+                @Html.TextBoxFor(m => m.TopicUp, new { @class = "form-control" })
+            </div>
+
+            <br />
+            <div class="form-group">
+                @Html.LabelFor(m=>m.TopicDown, "TopicDown", new { @class = "col-md-2 control-label" })<br />
+                @Html.TextBoxFor(m => m.TopicDown, new { @class = "form-control" })
+            </div>
+                <br />
+            <div class="form-check form-switch">
+                @Html.LabelFor(m=>m.Status, "Статус", new { @class = "form-check-label" })
+                @Html.CheckBoxFor(m => m.Status, new { @class = "form-check-input" })<br />
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m=>m.RoomName, "Комната", new { @class = "col-md-2 control-label" })<br />
+                @Html.TextBoxFor(m => m.RoomName, new { @class = "form-control" })
+            </div>
+
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+
+            <br />
+        }
+
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

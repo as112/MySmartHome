@@ -1,0 +1,69 @@
+﻿@using MySmartHomeWebApi.Models
+@model Rooms
+
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Rooms</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+       @* <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Lamps" class="control-label"></label><br />
+                <select asp-for="Lamps" asp-items="ViewBag.AllLamps"></select>
+                <span asp-validation-for="Lamps" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Sensors" class="control-label"></label><br />
+                <select asp-for="Sensors" asp-items="ViewBag.AllSensors"></select>
+                <span asp-validation-for="Sensors" class="text-danger"></span>
+            </div>
+            <div class="form-group"><br/>
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>*@
+
+        @using (Html.BeginForm("Edit", "Rooms", FormMethod.Post, new { @class = "form-control" }))
+        {
+            <div class="form-group">
+                <input type="hidden" for="Id"/>
+            </div>
+            <div class="form-group">
+                <label>Название комнаты</label> <br />
+                @Html.TextBox("Name")
+            </div><br />
+            <div class="form-group">
+                <label>Выберите лампочки</label><br />
+                @Html.DropDownList("selectedLamps", (MultiSelectList)ViewBag.AllLamps, new { multiple = "multiple", @class = "form-control" })
+            </div><br />
+            <div class="form-group">
+                <label>Выберите датчики</label><br />
+                @Html.DropDownList("selectedSensors", (MultiSelectList)ViewBag.AllSensors, new { multiple = "multiple", @class = "form-control" })
+            </div><br/>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div><br />
+        }
+
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

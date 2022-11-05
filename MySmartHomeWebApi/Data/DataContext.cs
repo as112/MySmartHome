@@ -76,11 +76,11 @@ namespace MySmartHomeWebApi.Data
 
             modelBuilder.Entity<Lamps>().HasData(lamps.ToArray());
 
-            modelBuilder.Entity<Persons>().HasData(
-                new Persons[]
-                {
-                new Persons { Id = Guid.NewGuid(), Email = "admin", Password = "admin", Role = Roles.Administrators }
-                });
+            //modelBuilder.Entity<Persons>().HasData(
+            //    new Persons[]
+            //    {
+            //    new Persons { Id = Guid.NewGuid(), Email = "admin", Password = "admin", Role = Roles.Administrators }
+            //    });
 
             modelBuilder.Entity<Sensors>().HasData(new Sensors[]
             {

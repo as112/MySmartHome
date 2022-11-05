@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.MVC", "Client.MVC\Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiClients", "WebApiClients\WebApiClients.csproj", "{C9B5458F-CD87-4877-BDE7-5FB35FF96C01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Blazor", "Client.Blazor\Client.Blazor.csproj", "{642939DE-0CE5-4317-9EBC-5B1F96F40E53}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Blazor", "Client.Blazor\Client.Blazor.csproj", "{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{C9B5458F-CD87-4877-BDE7-5FB35FF96C01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9B5458F-CD87-4877-BDE7-5FB35FF96C01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9B5458F-CD87-4877-BDE7-5FB35FF96C01}.Release|Any CPU.Build.0 = Release|Any CPU
-		{642939DE-0CE5-4317-9EBC-5B1F96F40E53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{642939DE-0CE5-4317-9EBC-5B1F96F40E53}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{642939DE-0CE5-4317-9EBC-5B1F96F40E53}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{642939DE-0CE5-4317-9EBC-5B1F96F40E53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -24,7 +24,7 @@ namespace MySmartHomeWebApi.ApiControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetToken([FromForm]Persons credentials)
+        public async Task<IActionResult> GetToken(Persons credentials)
         {
             var person = await _repository.GetByEmail(credentials.Email);
             

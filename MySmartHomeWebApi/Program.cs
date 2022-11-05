@@ -59,8 +59,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Services.GetRequiredService<MQTTClient>();
-app.Services.GetRequiredService<DataContext>().Database.Migrate();
-app.Services.GetRequiredService<HistoryContext>().Database.Migrate();
+//app.Services.GetRequiredService<DataContext>().Database.Migrate();
+//app.Services.GetRequiredService<HistoryContext>().Database.Migrate();
 
 app.Run();
 

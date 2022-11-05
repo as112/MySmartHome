@@ -1,0 +1,37 @@
+﻿@page "/account/login"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+@using MySmartHomeWebApi.Models
+
+@inject HttpClient Http
+
+<h3>Login</h3>
+
+<p>
+    <input type="text" @bind="@user.Email" placeholder="Email" />
+</p>
+<p>
+    <input type="password" @bind="@user.Password" placeholder="Password" />
+</p>
+<p>
+    <button class="btn btn-primary" @onclick="LoginUser">Sign In</button>
+</p>
+<p>
+    <textarea >hello, @user2.Email</textarea>
+</p>
+<p>
+    <textarea >token = @user2.Email</textarea>
+</p>
+
+@code {
+
+    Persons user = new Persons { Id = Guid.Empty };
+    Persons user2 = new Persons();
+    protected async Task LoginUser()
+    {
+        var response = await Http.PostAsJsonAsync("Login", user);
+        user2 = await response.Content.ReadFromJsonAsync<Persons>();
+    }
+
+}

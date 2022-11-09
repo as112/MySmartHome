@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.MVC", "Client.MVC\Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiClients", "WebApiClients\WebApiClients.csproj", "{C9B5458F-CD87-4877-BDE7-5FB35FF96C01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Blazor", "Client.Blazor\Client.Blazor.csproj", "{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.Blazor", "Client.Blazor\Client.Blazor.csproj", "{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -30,9 +30,8 @@ namespace MySmartHomeWebApi.ApiControllers
             
             if (person is null)
                 return Unauthorized();
-
-            var hash = passwordHasher.HashPassword(person, credentials.Password);
-            var isHashValid = passwordHasher.VerifyHashedPassword(person, hash, person.Password);
+            
+            var isHashValid = passwordHasher.VerifyHashedPassword(person, person.Password, credentials.Password);
 
             if (isHashValid == PasswordVerificationResult.Failed)
                 return Unauthorized();

@@ -57,7 +57,7 @@ namespace WebApiClients.Repositories
         }
         public async Task<T?> Update(T item, CancellationToken Cancel = default)
         {
-            var response = await _client.PutAsJsonAsync($"{item.Id}", item, Cancel).ConfigureAwait(false);
+            var response = await _client.PutAsJsonAsync("", item, Cancel).ConfigureAwait(false);
             var result = await response
                .EnsureSuccessStatusCode()
                .Content
@@ -79,8 +79,6 @@ namespace WebApiClients.Repositories
 
         public async Task<IEnumerable<T>> GetAll(CancellationToken Cancel = default)
         {
-            //_client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers
-            //    .AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJleHAiOjE2NjY4NzkzNjgsImlzcyI6Ik15U21hcnRIb21lIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.ibZO-brImzSzbaz4j3P4nEPyCnMa92K-g2YZuqKY2dE");
             return await _client.GetFromJsonAsync<IEnumerable<T>>("", Cancel).ConfigureAwait(false) ?? Enumerable.Empty<T>();
         }
 

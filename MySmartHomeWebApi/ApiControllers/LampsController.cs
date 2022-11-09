@@ -57,7 +57,7 @@ namespace MySmartHomeWebApi.ApiControllers
         public async Task<IActionResult> Put(Lamps lamp)
         {
             lamp.DateTimeUpdate = DateTime.Now;
-            //await _repository.Update(lamp).ConfigureAwait(false);
+            await _repository.Update(lamp).ConfigureAwait(false);
             var value = lamp.Status ? "1" : "0";
             await _mqtt.PublishAsync(lamp.TopicUp, value);
             return Ok(lamp);

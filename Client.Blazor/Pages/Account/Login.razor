@@ -4,6 +4,9 @@
 @using System.Threading.Tasks
 @using MySmartHomeWebApi.Models
 @using Client.Blazor.Data
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @inject HttpClient Http
 @inject NavigationManager NavManager
@@ -22,7 +25,7 @@
 
 @code {
 
-    Persons user = new Persons { Id = Guid.Empty };
+    Users user = new Users { Id = Guid.Empty };
     Token token = new Token();
     protected async Task LoginUser()
     {
@@ -33,12 +36,18 @@
             token = await response.Content.ReadFromJsonAsync<Token>();
             if (response.StatusCode == System.Net.HttpStatusCode.OK && token is not null)
             {
+                var currentUser = new Token { access_token = token.access_token, username = token.username };
                 if (!Token.tokens.ContainsKey(token.username))
+                {
                     Token.tokens.Add(token.username, token.access_token);
+                    
+                }
                 else
+                {
                     Token.tokens[token.username] = token.access_token;
-
-                NavManager.NavigateTo("/");
+                }
+                
+                NavManager.NavigateTo($"/");
             }
             else
             {

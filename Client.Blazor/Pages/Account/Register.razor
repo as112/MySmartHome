@@ -25,11 +25,11 @@
 
 @code {
     
-    Persons user = new Persons {Id = Guid.Empty};
-    Persons user2 = new Persons();
+    Users user = new Users {Id = Guid.Empty};
+    Users user2 = new Users();
     protected async Task CreateUsers()
     {
         var response = await Http.PostAsJsonAsync("Login/SignUp", user);
-        user2 = await response.Content.ReadFromJsonAsync<Persons>();
+        user2 = await response.Content.ReadFromJsonAsync<Users>();
     }
 }

@@ -49,10 +49,13 @@
 
     protected async Task AddLamp()
     {
+        var webRepo = (WebRepository<Lamps>)repo;
+        webRepo.SetDefaultRequestHeaders(Token.tokens.First().Value);
+
         lamp.Id = Guid.NewGuid();
         lamp.DateTimeUpdate = DateTime.Now;
         lamp.Status = false;
-        await repo.Add(lamp);
+        await webRepo.Add(lamp);
         NavManager.NavigateTo("/lamps");
     }
 }

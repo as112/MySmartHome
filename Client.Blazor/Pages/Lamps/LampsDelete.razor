@@ -24,34 +24,40 @@ else
                 <label>Name</label>
             </dt>
             <dd class="col-sm-10">
-                <input @bind=@lamp.Name />
+                <label>@lamp.Name</label>
             </dd>
             <dt class="col-sm-2">
-                <label>Status</label>
+                <label>Time Update</label>
             </dt>
             <dd class="col-sm-10">
-                <input type="checkbox" @bind=@lamp.Status />
+                <label>@lamp.DateTimeUpdate</label>
             </dd>
             <dt class="col-sm-2">
                 <label>Topic Up</label>
             </dt>
             <dd class="col-sm-10">
-                <input @bind=@lamp.TopicUp />
+                <label>@lamp.TopicUp</label>
             </dd>
             <dt class="col-sm-2">
                 <label>Topic Down</label>
             </dt>
             <dd class="col-sm-10">
-                <input @bind=@lamp.TopicDown />
+                <label>@lamp.TopicDown</label>
+            </dd>
+            <dt class="col-sm-2">
+                <label>Status</label>
+            </dt>
+            <dd class="col-sm-10">
+                <label>@lamp.Status</label>
             </dd>
             <dt class="col-sm-2">
                 <label>Room Name</label>
             </dt>
             <dd class="col-sm-10">
-                <input @bind=@lamp.RoomName />
+                <label>@lamp.RoomName</label>
             </dd>
         </dl>
-        <button class="btn btn-primary" @onclick="EditLamp">Delete</button>
+        <button class="btn btn-primary" @onclick="EditLamp">Delete</button><br/>
     </div>
 }
 <div>
@@ -66,15 +72,19 @@ else
     public string? lampId { get; set; }
     private Guid _id;
 
+    WebRepository<Lamps>? webRepo;
+
     protected override async Task OnInitializedAsync()
     {
+        webRepo = (WebRepository<Lamps>)repo;
+        webRepo.SetDefaultRequestHeaders(Token.tokens.FirstOrDefault().Value);
         _id = Guid.Parse(lampId!);
-        lamp = await repo.GetById(_id);
+        lamp = await webRepo.GetById(_id);
     }
 
     protected async Task EditLamp()
     {
-        lamp = await repo.DeleteById(_id);
+        lamp = await webRepo.DeleteById(_id);
         NavManager.NavigateTo("/lamps");
     }
 }

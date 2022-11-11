@@ -60,9 +60,11 @@ else
 @code {
 
     IEnumerable<Lamps>? lamps;
-
+    
     protected override async Task OnInitializedAsync()
     {
-        lamps = await repo.GetAll();
+        var webRepo = (WebRepository<Lamps>)repo;
+        webRepo.SetDefaultRequestHeaders(Token.tokens.First().Value);
+        lamps = await webRepo.GetAll();
     }
 }

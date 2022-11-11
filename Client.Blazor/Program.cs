@@ -21,13 +21,7 @@ builder.Services.AddScoped(sp =>
     {
         BaseAddress = new Uri(webApiAddr + "/api/")
     });
-builder.Services.AddHttpClient<IEntityRepository<Lamps>, WebRepository<Lamps>>(client =>
-{
-    var token = Token.tokens["user"];
-    client.BaseAddress = new Uri(webApiAddr + "/api/Lamps/");
-    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers
-                .AuthenticationHeaderValue("Bearer", token);
-});
+builder.Services.AddHttpClient<IEntityRepository<Lamps>, WebRepository<Lamps>>(client => client.BaseAddress = new Uri(webApiAddr + "/api/Lamps/"));
 
 var app = builder.Build();
 

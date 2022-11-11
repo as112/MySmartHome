@@ -66,15 +66,19 @@ else
     public string? lampId { get; set; }
     private Guid _id;
 
+    WebRepository<Lamps>? webRepo;
+
     protected override async Task OnInitializedAsync()
     {
+        webRepo = (WebRepository<Lamps>)repo;
+        webRepo.SetDefaultRequestHeaders(Token.tokens.FirstOrDefault().Value);
         _id = Guid.Parse(lampId!);
-        lamp = await repo.GetById(_id);
+        lamp = await webRepo.GetById(_id);
     }
 
     protected async Task EditLamp()
     {
         lamp.DateTimeUpdate = DateTime.Now;
-        lamp = await repo.Update(lamp);
+        lamp = await webRepo.Update(lamp);
     }
 }

@@ -15,6 +15,11 @@ namespace WebApiClients.Repositories
             _client = client;
         }
 
+        public void SetDefaultRequestHeaders(string token)
+        {
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
+
         public async Task<T> Add(T item, CancellationToken Cancel = default)
         {
             var response = await _client.PostAsJsonAsync("", item, Cancel).ConfigureAwait(false);

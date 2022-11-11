@@ -1,0 +1,70 @@
+﻿@page "/lamps"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+@using MySmartHomeWebApi.Models
+@using MySmartHomeWebApi.Data.Interfaces
+@using Client.Blazor.Auth.Data
+@using WebApiClients.Repositories
+@inject IEntityRepository<Lamps> repo
+
+<h3>Lamps</h3>
+
+@if (lamps == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="col-md-6">
+        <a href='/lamps/add' class="btn btn-primary" role="button">
+            <i class="fas fa-user-plus"></i>
+            Add new lamp
+        </a>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Time Update</th>
+                <th>Topic Up</th>
+                <th>Topic Down</th>
+                <th>Status</th>
+                <th>Room Name</th>
+                <th> </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var lamp in lamps)
+            {
+                <tr>
+                    <td>@lamp.Name</td>
+                    <td>@lamp.DateTimeUpdate</td>
+                    <td>@lamp.TopicUp</td>
+                    <td>@lamp.TopicDown</td>
+                    <td>
+                        <input type="checkbox" @bind=@lamp.Status disabled/>
+                    </td>
+                    <td>@lamp.RoomName</td>
+                    <td>
+                        <a href="lamps/edit/@lamp.Id">Edit</a> |
+                        <a href="lamps/details/@lamp.Id">Details</a> |
+                        <a href="lamps/delete/@lamp.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    IEnumerable<Lamps>? lamps;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var webRepo = (WebRepository<Lamps>)repo;
+        webRepo.SetDefaultRequestHeaders(Token.tokens.First().Value);
+        lamps = await webRepo.GetAll();
+    }
+}

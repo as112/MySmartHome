@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MySmartHomeWebApi.Data;
 using MySmartHomeWebApi.Data.Interfaces;
 using MySmartHomeWebApi.Models;
 using System.IdentityModel.Tokens.Jwt;
@@ -14,29 +15,28 @@ namespace MySmartHomeWebApi.ApiControllers
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
-        private readonly IUserRepository<Persons> _repository;
-        private readonly PasswordHasher<Persons> passwordHasher;
+        private readonly UserDbContext _context;
+        private readonly PasswordHasher<IdentityUser> passwordHasher;
 
-        public LoginController(IUserRepository<Persons> repository)
+        public LoginController(UserDbContext context)
         {
-            _repository = repository;
+            _context = context;
             passwordHasher = new();
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetToken(Persons credentials)
+        public async Task<IActionResult> GetToken(Users credentials)
         {
-            var person = await _repository.GetByEmail(credentials.Email);
-            
-            if (person is null)
+            var user = await _context.Users.FirstOrDefaultAsync(s => s.Email == credentials.Email);
+            if (user is null)
                 return Unauthorized();
             
-            var isHashValid = passwordHasher.VerifyHashedPassword(person, person.Password, credentials.Password);
+            var isHashValid = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, credentials.Password);
 
             if (isHashValid == PasswordVerificationResult.Failed)
                 return Unauthorized();
 
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, person.Email) };
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Email) };
             var jwt = new JwtSecurityToken(
                     issuer: AuthOptions.ISSUER,
                     audience: AuthOptions.AUDIENCE,
@@ -48,44 +48,44 @@ namespace MySmartHomeWebApi.ApiControllers
             var response = new
             {
                 access_token = encodedJwt,
-                username = person.Email
+                username = user.Email
             };
             return Ok(Results.Json(response));
         }
 
-        [HttpPost("SignUp")]
-        public async Task<IActionResult> SignIn(Persons user)
-        {
-            var isExist = await _repository.GetByEmail(user.Email);
-            if(isExist is not null) 
-                return Conflict(user.Email);
-            user.Id = Guid.NewGuid();
-            user.Role = Roles.Users;
-            user.Password = passwordHasher.HashPassword(user, user.Password);
-            return Ok(await _repository.Add(user));
-        }
+        //[HttpPost("SignUp")]
+        //public async Task<IActionResult> SignIn(Persons user)
+        //{
+        //    var isExist = await _repository.GetByEmail(user.Email);
+        //    if(isExist is not null) 
+        //        return Conflict(user.Email);
+        //    user.Id = Guid.NewGuid();
+        //    user.Role = Roles.Users;
+        //    user.Password = passwordHasher.HashPassword(user, user.Password);
+        //    return Ok(await _repository.Add(user));
+        //}
 
-        [HttpPost("user")]
-        public async Task<ActionResult> GetByEmail([FromBody] string email)
-        {
-            var person = await _repository.GetByEmail(email);
-            return person is null ? NotFound() : Ok(person);
-        }
+        //[HttpPost("user")]
+        //public async Task<ActionResult> GetByEmail([FromBody] string email)
+        //{
+        //    var person = await _repository.GetByEmail(email);
+        //    return person is null ? NotFound() : Ok(person);
+        //}
 
-        // PUT api/<LoginController>/edit
-        [HttpPut("edit")]
-        public async Task<IActionResult> Put([FromBody] Persons user)
-        {
-            user.Password = passwordHasher.HashPassword(user, user.Password);
-            return Ok(await _repository.Update(user));
-        }
+        //// PUT api/<LoginController>/edit
+        //[HttpPut("edit")]
+        //public async Task<IActionResult> Put([FromBody] Persons user)
+        //{
+        //    user.Password = passwordHasher.HashPassword(user, user.Password);
+        //    return Ok(await _repository.Update(user));
+        //}
 
-        // DELETE api/<LoginController>/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            return Ok(await _repository.DeleteById(id));
-        }
+        //// DELETE api/<LoginController>/5
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> Delete(Guid id)
+        //{
+        //    return Ok(await _repository.DeleteById(id));
+        //}
 
     }
 }

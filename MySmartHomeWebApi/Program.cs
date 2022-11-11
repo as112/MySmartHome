@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using MySmartHomeWebApi.Data.Interfaces;
 using MySmartHomeWebApi.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +24,11 @@ builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(conne
 builder.Services.AddDbContext<HistoryContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Singleton);
 builder.Services.AddSingleton<MQTTClient>();
 builder.Services.AddTransient(typeof(IEntityRepository<>), typeof(DbEntityRepository<>));
-builder.Services.AddTransient<IUserRepository<Persons>, DbUserRepository<Persons>>();
+//builder.Services.AddTransient<IUserRepository<Users>, DbUserRepository<Users>>();
 builder.Services.AddTransient<IHistoryRepository<HistoryData>, DbHistoryRepository<HistoryData>>();
+
+builder.Services.AddDbContext<UserDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -59,8 +63,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Services.GetRequiredService<MQTTClient>();
-//app.Services.GetRequiredService<DataContext>().Database.Migrate();
-//app.Services.GetRequiredService<HistoryContext>().Database.Migrate();
 
 app.Run();
 

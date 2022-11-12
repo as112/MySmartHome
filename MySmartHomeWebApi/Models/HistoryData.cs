@@ -6,8 +6,10 @@ namespace MySmartHomeWebApi.Models
 {
     public class HistoryData : BaseEntity
     {
+        private DateTime dateTimeUpdate;
+
         [Required]
-        public DateTime DateTimeUpdate { get; set; }
+        public DateTime DateTimeUpdate { get => dateTimeUpdate; set => dateTimeUpdate = value.ToUniversalTime(); }
         [Required]
         public string Value { get; set; }
         [Required]

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using MySmartHomeWebApi.Data.Interfaces;
 using MySmartHomeWebApi.Models;
 using Microsoft.AspNetCore.Identity;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,15 +21,16 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("MySmartHomeWebApiContext");
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Singleton);
-builder.Services.AddDbContext<HistoryContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Singleton);
+builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Singleton);
+builder.Services.AddDbContext<HistoryContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Singleton);
 builder.Services.AddSingleton<MQTTClient>();
 builder.Services.AddTransient(typeof(IEntityRepository<>), typeof(DbEntityRepository<>));
 //builder.Services.AddTransient<IUserRepository<Users>, DbUserRepository<Users>>();
 builder.Services.AddTransient<IHistoryRepository<HistoryData>, DbHistoryRepository<HistoryData>>();
 
+var userConnectionString = builder.Configuration.GetConnectionString("UserDbConnection");
 builder.Services.AddDbContext<UserDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseNpgsql(userConnectionString));
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

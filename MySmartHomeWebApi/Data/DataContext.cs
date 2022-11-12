@@ -33,7 +33,7 @@ namespace MySmartHomeWebApi.Data
             {
                 Id = Guid.NewGuid(),
                 Name = "test",
-                DateTimeUpdate = DateTime.Now,
+                DateTimeUpdate = DateTime.Now.ToUniversalTime(),
                 Topic = "/test",
                 Value = "112"
 

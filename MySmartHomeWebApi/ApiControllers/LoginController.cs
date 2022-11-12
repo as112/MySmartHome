@@ -50,7 +50,7 @@ namespace MySmartHomeWebApi.ApiControllers
                 access_token = encodedJwt,
                 username = user.Email
             };
-            return Ok(Results.Json(response));
+            return Ok(response);
         }
 
         //[HttpPost("SignUp")]

@@ -1,4 +1,13 @@
 ﻿@page "/"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+@using MySmartHomeWebApi.Models
+@using Client.Blazor.Auth.Data
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject HttpClient http
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Index</PageTitle>
 
@@ -7,3 +16,75 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+<h3>ClaimsPrincipal Data</h3>
+
+<p>@authMessage</p>
+
+<button @onclick="GetClaimsPrincipalData">Регистрация в WebApi</button>
+<input type="password" @bind=@password placeholder="Введите пароль"/>
+<p>@surnameMessage</p>
+<input type="text" @bind=@token.access_token/>
+<input type="text" @bind=@token.username />
+@code{
+
+    private string authMessage;
+    private string surnameMessage;
+    private string password;
+    private string email;
+    private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
+
+
+    Users user = new Users();
+    Token token = new Token();
+
+    private async Task GetClaimsPrincipalData()
+    {
+        try
+        {
+            user.Email = email;
+            user.Password = password;
+            var response = await http.PostAsJsonAsync("Login", user);
+
+            token = await response.Content.ReadFromJsonAsync<Token>();
+            if (response.StatusCode == System.Net.HttpStatusCode.OK && token.access_token is not null)
+            {
+                if (!Token.tokens.ContainsKey(token.username))
+                {
+                    Token.tokens.Add(token.username, token.access_token);
+                }
+                else
+                {
+                    Token.tokens[token.username] = token.access_token;
+                }
+
+            }
+            else
+            {
+                authMessage = response.StatusCode.ToString();
+            }
+        }
+        catch(Exception e)
+        {
+            authMessage = e.Message;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user1 = authState.User;
+
+        if (user1.Identity.IsAuthenticated)
+        {
+            authMessage = $"{user1.Identity.Name} is authenticated.";
+            claims = user1.Claims;
+            surnameMessage = $"Surname: {user1.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value}";
+            email = user1.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!;
+        }
+        else
+        {
+            authMessage = "The user is NOT authenticated.";
+        }
+    }
+}

@@ -64,7 +64,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         var webRepo = (WebRepository<Lamps>)repo;
-        webRepo.SetDefaultRequestHeaders(Token.tokens.First().Value);
+        webRepo.SetDefaultRequestHeaders(Token.tokens.FirstOrDefault().Value);
         lamps = await webRepo.GetAll();
     }
 }

@@ -8,6 +8,7 @@ namespace Client.Blazor.Auth.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+            //Database.EnsureDeleted();
         }
     }
 }

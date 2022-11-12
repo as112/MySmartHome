@@ -12,10 +12,10 @@ namespace Client.Blazor.Auth.Data.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(nullable: true)
+                    Id = table.Column<string>(nullable: false, type: "varchar"),
+                    Name = table.Column<string>(maxLength: 256, nullable: true, type:"varchar"),
+                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true, type: "varchar"),
+                    ConcurrencyStamp = table.Column<string>(nullable: true, type: "varchar")
                 },
                 constraints: table =>
                 {
@@ -26,20 +26,20 @@ namespace Client.Blazor.Auth.Data.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
-                    UserName = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
-                    Email = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(nullable: false),
-                    PasswordHash = table.Column<string>(nullable: true),
-                    SecurityStamp = table.Column<string>(nullable: true),
-                    ConcurrencyStamp = table.Column<string>(nullable: true),
-                    PhoneNumber = table.Column<string>(nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
-                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    Id = table.Column<string>(nullable: false, type: "varchar"),
+                    UserName = table.Column<string>(maxLength: 256, nullable: true, type: "varchar"),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true, type: "varchar"),
+                    Email = table.Column<string>(maxLength: 256, nullable: true, type: "varchar"),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true, type: "varchar"),
+                    EmailConfirmed = table.Column<bool>(nullable: false, type:"boolean"),
+                    PasswordHash = table.Column<string>(nullable: true, type: "varchar"),
+                    SecurityStamp = table.Column<string>(nullable: true, type: "varchar"),
+                    ConcurrencyStamp = table.Column<string>(nullable: true, type: "varchar"),
+                    PhoneNumber = table.Column<string>(nullable: true, type: "varchar"),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false, type:"boolean"),
+                    TwoFactorEnabled = table.Column<bool>(nullable: false, type:"boolean"),
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true, type:"timestamp with time zone"),
+                    LockoutEnabled = table.Column<bool>(nullable: false, type:"boolean"),
                     AccessFailedCount = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -53,9 +53,9 @@ namespace Client.Blazor.Auth.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    RoleId = table.Column<string>(nullable: false),
-                    ClaimType = table.Column<string>(nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true)
+                    RoleId = table.Column<string>(nullable: false, type: "varchar"),
+                    ClaimType = table.Column<string>(nullable: true, type: "varchar"),
+                    ClaimValue = table.Column<string>(nullable: true, type: "varchar")
                 },
                 constraints: table =>
                 {
@@ -74,9 +74,9 @@ namespace Client.Blazor.Auth.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<string>(nullable: false),
-                    ClaimType = table.Column<string>(nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true)
+                    UserId = table.Column<string>(nullable: false, type: "varchar"),
+                    ClaimType = table.Column<string>(nullable: true, type: "varchar"),
+                    ClaimValue = table.Column<string>(nullable: true, type: "varchar")
                 },
                 constraints: table =>
                 {
@@ -93,10 +93,10 @@ namespace Client.Blazor.Auth.Data.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(maxLength: 128, nullable: false),
-                    ProviderDisplayName = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: false)
+                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false, type: "varchar"),
+                    ProviderKey = table.Column<string>(maxLength: 128, nullable: false, type: "varchar"),
+                    ProviderDisplayName = table.Column<string>(nullable: true, type: "varchar"),
+                    UserId = table.Column<string>(nullable: false, type: "varchar")
                 },
                 constraints: table =>
                 {
@@ -113,8 +113,8 @@ namespace Client.Blazor.Auth.Data.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(nullable: false),
-                    RoleId = table.Column<string>(nullable: false)
+                    UserId = table.Column<string>(nullable: false, type: "varchar"),
+                    RoleId = table.Column<string>(nullable: false, type: "varchar")
                 },
                 constraints: table =>
                 {
@@ -137,10 +137,10 @@ namespace Client.Blazor.Auth.Data.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(nullable: false),
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    Name = table.Column<string>(maxLength: 128, nullable: false),
-                    Value = table.Column<string>(nullable: true)
+                    UserId = table.Column<string>(nullable: false, type: "varchar"),
+                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false, type: "varchar"),
+                    Name = table.Column<string>(maxLength: 128, nullable: false, type: "varchar"),
+                    Value = table.Column<string>(nullable: true, type: "varchar")
                 },
                 constraints: table =>
                 {
@@ -163,7 +163,7 @@ namespace Client.Blazor.Auth.Data.Migrations
                 table: "AspNetRoles",
                 column: "NormalizedName",
                 unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                filter: "\"NormalizedName\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -190,7 +190,7 @@ namespace Client.Blazor.Auth.Data.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                filter: "\"NormalizedUserName\" IS NOT NULL");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

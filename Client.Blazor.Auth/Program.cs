@@ -34,6 +34,7 @@ builder.Services.AddScoped(sp =>
         BaseAddress = new Uri(webApiAddr + "/api/")
     });
 builder.Services.AddHttpClient<IEntityRepository<Lamps>, WebRepository<Lamps>>(client => client.BaseAddress = new Uri(webApiAddr + "/api/Lamps/"));
+builder.Services.AddHttpClient<IEntityRepository<Sensors>, WebRepository<Sensors>>(client => client.BaseAddress = new Uri(webApiAddr + "/api/Sensors/"));
 
 var app = builder.Build();
 

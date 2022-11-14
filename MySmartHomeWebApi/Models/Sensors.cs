@@ -8,7 +8,7 @@ namespace MySmartHomeWebApi.Models
     [Index(nameof(Name))]
     public class Sensors : MqttEntity
     {
-        public double Value { get; set; }
+        public string? Value { get; set; }
         public string? RoomName { get; set; }
 
         public override string ToString() => Name;

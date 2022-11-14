@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.MVC", "Client.MVC\Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiClients", "WebApiClients\WebApiClients.csproj", "{C9B5458F-CD87-4877-BDE7-5FB35FF96C01}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.Blazor", "Client.Blazor\Client.Blazor.csproj", "{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.Blazor.Auth", "Client.Blazor.Auth\Client.Blazor.Auth.csproj", "{06A10B1E-CE6A-4567-9EB3-61F2A47D2826}"
 EndProject
 Global
@@ -31,10 +29,6 @@ Global
 		{C9B5458F-CD87-4877-BDE7-5FB35FF96C01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9B5458F-CD87-4877-BDE7-5FB35FF96C01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9B5458F-CD87-4877-BDE7-5FB35FF96C01}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A7B8DE3-BB96-47A9-8EC6-4CDBCFD71E33}.Release|Any CPU.Build.0 = Release|Any CPU
 		{06A10B1E-CE6A-4567-9EB3-61F2A47D2826}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{06A10B1E-CE6A-4567-9EB3-61F2A47D2826}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06A10B1E-CE6A-4567-9EB3-61F2A47D2826}.Release|Any CPU.ActiveCfg = Release|Any CPU

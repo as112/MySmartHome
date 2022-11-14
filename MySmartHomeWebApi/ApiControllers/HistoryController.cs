@@ -68,19 +68,41 @@ namespace MySmartHomeWebApi.ApiControllers
             return Ok(await _repository.DeleteAllUntilDate(daysAgo));
         }
 
+        //// POST: api/History/filter
+        //[HttpPost("filter")]
+        //public async Task<ActionResult> GetData([FromBody] string name, int hourAgoFrom, int hourAgoTo)
+        //{
+        //    if(hourAgoFrom < hourAgoTo)
+        //        return NoContent();
+        //    var result = await _repository
+        //        .GetAllWithPredicate(s =>
+        //            s.Name == name &&
+        //            s.DateTimeUpdate >= DateTime.Now.AddHours(-1 * hourAgoFrom) &&
+        //            s.DateTimeUpdate <= DateTime.Now.AddHours(-1 * hourAgoTo))
+        //        .ConfigureAwait(false);
+        //    return Ok(result);
+        //}
+
         // POST: api/History/filter
         [HttpPost("filter")]
-        public async Task<ActionResult> GetData([FromBody] string name, int hourAgoFrom, int hourAgoTo)
+        public async Task<ActionResult> GetData([FromBody] DataForFilter data)
         {
-            if(hourAgoFrom < hourAgoTo)
+            if (data.hourAgoFrom < data.hourAgoTo)
                 return NoContent();
             var result = await _repository
                 .GetAllWithPredicate(s =>
-                    s.Name == name &&
-                    s.DateTimeUpdate >= DateTime.Now.AddHours(-1 * hourAgoFrom) &&
-                    s.DateTimeUpdate <= DateTime.Now.AddHours(-1 * hourAgoTo))
+                    s.Name == data.name &&
+                    s.DateTimeUpdate >= DateTime.Now.AddHours(-1 * data.hourAgoFrom) &&
+                    s.DateTimeUpdate <= DateTime.Now.AddHours(-1 * data.hourAgoTo))
                 .ConfigureAwait(false);
             return Ok(result);
         }
+
+    }
+    public class DataForFilter
+    {
+        public string name { get; set; }
+        public int hourAgoFrom { get; set; }
+        public int hourAgoTo { get; set; }
     }
 }

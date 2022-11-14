@@ -91,7 +91,8 @@ namespace MySmartHomeWebApi.Data
                     Name = "Подача",
                     TopicUp = "/user/as112/KOTEL/Pod/",
                     TopicDown = null,
-                    RoomName = "Котельная"
+                    RoomName = "Котельная",
+                    Value = "1.5"
                 },
                 new Sensors
                 {
@@ -100,7 +101,8 @@ namespace MySmartHomeWebApi.Data
                     Name = "Обратка",
                     TopicUp = "/user/as112/KOTEL/Obr/",
                     TopicDown = null,
-                    RoomName = "Котельная"
+                    RoomName = "Котельная",
+                    Value = "1.5"
                 },
                 new Sensors
                 {
@@ -109,7 +111,8 @@ namespace MySmartHomeWebApi.Data
                     Name = "Термопара",
                     TopicUp = "/user/as112/KOTEL/Bunker/",
                     TopicDown = null,
-                    RoomName = "Котельная"
+                    RoomName = "Котельная",
+                    Value = "1.5"
                 },
                 new Sensors
                 {
@@ -118,7 +121,8 @@ namespace MySmartHomeWebApi.Data
                     Name = "Мощность",
                     TopicUp = "/user/as112/KOTEL/Power/",
                     TopicDown = null,
-                    RoomName = "Котельная"
+                    RoomName = "Котельная",
+                    Value = "1.5"
                 },
                 new Sensors
                 {
@@ -127,7 +131,8 @@ namespace MySmartHomeWebApi.Data
                     Name = "Расход",
                     TopicUp = "/user/as112/KOTEL/Rashod/",
                     TopicDown = null,
-                    RoomName = "Котельная"
+                    RoomName = "Котельная",
+                    Value = "1.5"
                 },
                 new Sensors
                 {
@@ -136,7 +141,8 @@ namespace MySmartHomeWebApi.Data
                     Name = "Температура в коридоре",
                     TopicUp = "/user/as112/ESP05/TEMP/",
                     TopicDown = null,
-                    RoomName = "Котельная"
+                    RoomName = "Котельная",
+                    Value = "1.5"
                 }
             });
             modelBuilder.Entity<Rooms>().HasData(

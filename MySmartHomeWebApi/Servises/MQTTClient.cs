@@ -130,7 +130,7 @@ namespace MySmartHomeWebApi.Servises
             var sensorsByName = await sensorRepo.GetWithInclude(s => s.TopicUp == topic, null);
             var sensorByName = sensorsByName.OrderBy(s => s.DateTimeUpdate).Last();
 
-            if (DateTime.Now.AddMinutes(-2) >= sensor.DateTimeUpdate)
+            if (DateTime.Now.ToUniversalTime().AddMinutes(-2) >= sensor.DateTimeUpdate)
             {
                 var newSensor = new HistoryData();
                 newSensor.Id = Guid.NewGuid();
@@ -139,16 +139,16 @@ namespace MySmartHomeWebApi.Servises
                 newSensor.Topic = sensor.Topic;
                 newSensor.Value = value;
                 await historyRepo.Add(newSensor);
-                //_logger.LogError($"{topic} - {DateTime.Now - sensor.DateTimeUpdate}");
+                _logger.LogError($"{topic} - {DateTime.Now.ToUniversalTime() - sensor.DateTimeUpdate}");
             }
 
-            double v = 0;
-            var payload = value.Replace('.', ',');
-            double.TryParse(payload, out v);
+            //double v = 0;
+            //var payload = value.Replace('.', ',');
+            //double.TryParse(payload, out v);
             sensorByName.DateTimeUpdate = DateTime.Now;
-            sensorByName.Value = v;
+            sensorByName.Value = value;
             await sensorRepo.Update(sensorByName);
-            //_logger.LogError($"Sensor {sensorByName.Name} has been updating");
+            _logger.LogError($"Sensor {sensorByName.Name} has been updating");
         }
 
         private async Task AddToDbLamp(DbEntityRepository<Lamps> lampRepo, DbHistoryRepository<HistoryData> historyRepo, string topic, string value)

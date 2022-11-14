@@ -1,0 +1,82 @@
+﻿
+@page "/sensors/details/{sensorId}"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+@using MySmartHomeWebApi.Models
+@using MySmartHomeWebApi.Data.Interfaces
+@using Client.Blazor.Auth.Data
+@using WebApiClients.Repositories
+@inject HttpClient Http
+@inject IEntityRepository<Sensors> repo
+
+<h3>Sensor Details</h3>
+
+@if (sensorHistory == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Time Update</th>
+                    <th>Topic</th>
+                    <th>Value</th>
+                    <th> </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var sensor in sensorHistory)
+                {
+                    <tr>
+                        <td>@sensor.Name</td>
+                        <td>@sensor.DateTimeUpdate.ToLocalTime()</td>
+                        <td>@sensor.Topic</td>
+                        <td>@sensor.Value</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+<div>
+    <a href="sensors">Back to List</a>
+</div>
+
+@code {
+    IEnumerable<HistoryData>? sensorHistory;
+    [Parameter]
+    public string? sensorId { get; set; }
+    private Guid _id;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _id = Guid.Parse(sensorId!);
+
+        var webRepo = (WebRepository<Sensors>)repo;
+        webRepo.SetDefaultRequestHeaders(Token.tokens.FirstOrDefault().Value);
+        var sensor = await webRepo.GetById(_id);
+
+        Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers
+            .AuthenticationHeaderValue("Bearer", Token.tokens.First().Value);
+
+        var data = new
+        {
+            name = sensor.Name,
+            hourAgoFrom = 24,
+            hourAgoTo = 0
+        };
+        var response = await Http.PostAsJsonAsync($"History/filter", data).ConfigureAwait(false);
+
+        sensorHistory = await response
+               .EnsureSuccessStatusCode()
+               .Content
+               .ReadFromJsonAsync<IEnumerable<HistoryData>>()
+               .ConfigureAwait(false);
+
+    }
+}

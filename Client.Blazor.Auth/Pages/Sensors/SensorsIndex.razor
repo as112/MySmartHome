@@ -1,0 +1,80 @@
+﻿@page "/sensors"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+@using MySmartHomeWebApi.Models
+@using MySmartHomeWebApi.Data.Interfaces
+@using Client.Blazor.Auth.Data
+@using WebApiClients.Repositories
+@inject IEntityRepository<Sensors> repo
+
+<h3>Sensors</h3>
+
+@if (sensors == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="col-md-6">
+        <a href='/sensors/add' class="btn btn-primary" role="button">
+            <i class="fas fa-user-plus"></i>
+            Add new sensor
+        </a>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Time Update</th>
+                <th>Topic</th>
+                <th>Room Name</th>
+                <th> </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sensor in sensors)
+            {
+                <tr>
+                    <td>@sensor.Name</td>
+                    <td>@sensor.Value</td>
+                    <td>@sensor.DateTimeUpdate.ToLocalTime()</td>
+                    <td>@sensor.TopicUp</td>
+                    <td>@sensor.RoomName</td>
+                    <td>
+                        <a href="sensors/edit/@sensor.Id">Edit</a> |
+                        <a href="sensors/details/@sensor.Id">Details</a> |
+                        <a href="sensors/delete/@sensor.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    IEnumerable<Sensors>? sensors;
+    WebRepository<Sensors> webRepo;
+    protected override async Task OnInitializedAsync()
+    {
+        webRepo = (WebRepository<Sensors>)repo;
+        var token = Token.tokens.FirstOrDefault().Value;
+        webRepo.SetDefaultRequestHeaders(token);
+        sensors = await webRepo.GetAll();
+        sensors = sensors.OrderBy(s => s.Name);
+        ReloadData();
+    }
+
+    private async void ReloadData()
+    {
+        while (true)
+        {
+            await Task.Delay(10000);
+            sensors = await webRepo.GetAll();
+            sensors = sensors.OrderBy(s => s.Name);
+            StateHasChanged();
+        }
+    }
+}

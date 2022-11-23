@@ -17,18 +17,32 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("UserDbConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddRazorPages().AddNewtonsoftJson(options =>
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+//builder.Services.AddIdentityCore<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.User.AllowedUserNameCharacters =
+            "éöóêåíãøùçõúôûâàïðîëäæýÿ÷ñìèòüáþÖÓÊÅÍÃØÙÇÕÔÂÀÏÐÎËÄÆÝß×ÑÌÈÒÁÞabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    options.User.RequireUniqueEmail = false;
+
+});
+
+builder.Services.AddRazorPages().AddNewtonsoftJson(options => 
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddTransient<Token>();
+builder.Services.AddSingleton<TokenStorage>();
 
 var webApiAddr = builder.Configuration.GetSection("WebApi").Value;
-builder.Services.AddScoped(sp =>
+builder.Services.AddTransient(sp =>
     new HttpClient
     {
         BaseAddress = new Uri(webApiAddr + "/api/")

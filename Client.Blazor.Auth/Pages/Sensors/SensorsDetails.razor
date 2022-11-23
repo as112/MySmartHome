@@ -1,14 +1,22 @@
-﻿
-@page "/sensors/details/{sensorId}"
+﻿@page "/sensors/details/{sensorId}"
 @using System.Net.Http
 @using System.Net.Http.Json
 @using System.Threading.Tasks
 @using MySmartHomeWebApi.Models
 @using MySmartHomeWebApi.Data.Interfaces
 @using Client.Blazor.Auth.Data
+@using System.Security.Claims
 @using WebApiClients.Repositories
+@using Plotly.Blazor.LayoutLib
+@using Plotly.Blazor.Traces.ScatterLib
+@using Title = Plotly.Blazor.LayoutLib.Title
+@using YAxis = Plotly.Blazor.LayoutLib.YAxis
+@using Plotly.Blazor.LayoutLib.YAxisLib
+
 @inject HttpClient Http
 @inject IEntityRepository<Sensors> repo
+@inject TokenStorage tokenStorage
+@inject AuthenticationStateProvider provider
 
 <h3>Sensor Details</h3>
 
@@ -18,14 +26,15 @@
 }
 else
 {
+@*
     <div>
         <table class="table">
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Value</th>
                     <th>Time Update</th>
                     <th>Topic</th>
-                    <th>Value</th>
                     <th> </th>
                 </tr>
             </thead>
@@ -34,15 +43,28 @@ else
                 {
                     <tr>
                         <td>@sensor.Name</td>
+                        <td>@sensor.Value</td>
                         <td>@sensor.DateTimeUpdate.ToLocalTime()</td>
                         <td>@sensor.Topic</td>
-                        <td>@sensor.Value</td>
                     </tr>
                 }
             </tbody>
         </table>
-    </div>
+    </div>*@
 }
+
+<PlotlyChart style="height: 60vh; min-height: 350px" @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart" />
+
+<div class="text-right">
+    <input type="date" @bind="DateFrom" />
+    <input type="date" @bind="DateTo" />
+</div>
+<br/>
+
+<div class="text-right">
+    <button class="btn btn-primary" @onclick="@(() => GetDataForXHours(hoursFrom, hoursTo))">Обновить</button>
+</div>
+<br/>
 <div>
     <a href="sensors">Back to List</a>
 </div>
@@ -51,32 +73,162 @@ else
     IEnumerable<HistoryData>? sensorHistory;
     [Parameter]
     public string? sensorId { get; set; }
-    private Guid _id;
+    private PlotlyChart? chart;
+    private Config config = new()
+        {
+            Responsive = true
+        };
+    private Layout layout = new()
+        {
+            Title = new Title { Text = "Scatter" },
+            YAxis = new List<YAxis>
+            {
+                new()
+                {
+                    Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Scatter Unit" }
+                }
+            }
+        };
+
+    private IList<ITrace> data = new List<ITrace>
+    {
+        new Scatter
+        {
+            Name = "ScatterTrace",
+            Mode = ModeFlag.Lines | ModeFlag.Markers,
+            X = new List<object>(),
+            Y = new List<object>()
+        }
+    };
+    private int hoursFrom;
+    private int hoursTo;
+
+    private DateTime dateFrom;
+    public DateTime DateFrom 
+    {
+        get => dateFrom; 
+        set
+        {
+            dateFrom = value;
+            var timeSpan = DateTime.Now.Subtract(value);
+            hoursFrom = timeSpan.Hours + timeSpan.Days * 24;
+        }
+    }
+
+    private DateTime dateTo = DateTime.Now;
+    public DateTime DateTo
+    {
+        get => dateTo;
+        set
+        {
+            dateTo = value;
+            var timeSpan = DateTime.Now.Subtract(value);
+            hoursTo = timeSpan.Days == 0 ? 0 : (timeSpan.Hours + timeSpan.Days * 24) - 24;
+        }
+    }
+
+    private string _token;
 
     protected override async Task OnInitializedAsync()
     {
-        _id = Guid.Parse(sensorId!);
+        var authState = await provider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _token = tokenStorage.GetTokenByEmail(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
 
+        DateFrom = DateTime.Now.AddDays(-1);
+        var sensor = await GetSensor(sensorId!);
+        var(values, times) = await GetData(sensor.Name, 12, 0);
+        chart.Layout.Title.Text = sensor.Name;
+        await chart.Clear();
+        await AddScatter(sensor.Name, values, times);
+    }
+
+    private async Task GetDataForXHours(int from, int to)
+    {
+        var sensor = await GetSensor(sensorId!);
+        var(values, times) = await GetData(sensor.Name, from, to);
+        chart.Layout.Title.Text = sensor.Name;
+        await chart.Clear();
+        await AddScatter(sensor.Name, values, times);
+    }
+
+    private async Task<Sensors?> GetSensor(string id)
+    {
+        var _id = Guid.Parse(id);
         var webRepo = (WebRepository<Sensors>)repo;
-        webRepo.SetDefaultRequestHeaders(Token.tokens.FirstOrDefault().Value);
-        var sensor = await webRepo.GetById(_id);
+      
+        webRepo.SetDefaultRequestHeaders(_token);
+        return await webRepo.GetById(_id);
+    }
 
+    private async Task<(double[] values, DateTime[] times)> GetData(string sensorName, int _hourAgoFrom, int _hourAgoTo)
+    {
         Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers
-            .AuthenticationHeaderValue("Bearer", Token.tokens.First().Value);
+            .AuthenticationHeaderValue("Bearer", _token);
 
-        var data = new
+        var filter = new
         {
-            name = sensor.Name,
-            hourAgoFrom = 24,
-            hourAgoTo = 0
+            name = sensorName,
+            hourAgoFrom = _hourAgoFrom,
+            hourAgoTo = _hourAgoTo
         };
-        var response = await Http.PostAsJsonAsync($"History/filter", data).ConfigureAwait(false);
+        var response = await Http.PostAsJsonAsync($"History/filter", filter).ConfigureAwait(false);
 
-        sensorHistory = await response
+        sensorHistory = response.StatusCode != System.Net.HttpStatusCode.OK ? Enumerable.Empty<HistoryData>() :
+            await response
                .EnsureSuccessStatusCode()
                .Content
                .ReadFromJsonAsync<IEnumerable<HistoryData>>()
                .ConfigureAwait(false);
+        sensorHistory = sensorHistory.OrderBy(s => s.DateTimeUpdate);
 
+        var times = sensorHistory.Select(s => s.DateTimeUpdate.ToLocalTime()).ToArray();
+        var values = sensorHistory.Select(s => double.Parse(s.Value.Replace('.', ','))).ToArray();
+        return (values, times);
+    }
+
+    private async Task AddScatter(string sensorName, double[] value, DateTime[] time)
+    {
+        var (x, y) = GenerateData(value, time);
+        await chart.AddTrace(new Scatter
+            {
+                Name = sensorName,
+                Mode = ModeFlag.Lines | ModeFlag.Markers,
+                X = x,
+                Y = y
+            });
+    }
+
+    private async Task ExtendData(string sensorName, double[] value, DateTime[] time)
+    {
+        
+        if (!(chart.Data.FirstOrDefault() is Scatter scatter))
+        {
+            return;
+        }
+        var (x, y) = GenerateData(value, time);
+        if (!scatter.X.Any() || !scatter.Y.Any())
+        {
+            scatter.X.AddRange(x);
+            scatter.Y.AddRange(y);
+            await chart.React();
+        }
+        else
+        {
+            await chart.ExtendTrace(x, y, data.IndexOf(scatter));
+        }
+    }
+
+    private static (List<object> X, List<object> Y) GenerateData(double[] value, DateTime[] time)
+    {
+        var x = new List<object>();
+        var y = new List<object>();
+
+        for (var i = 0; i < value.Length; i++)
+        {
+            x.Add(time[i]);
+            y.Add(value[i]);
+        }
+        return (x, y);
     }
 }

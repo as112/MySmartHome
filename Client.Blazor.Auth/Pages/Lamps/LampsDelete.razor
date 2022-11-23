@@ -5,9 +5,12 @@
 @using MySmartHomeWebApi.Models
 @using MySmartHomeWebApi.Data.Interfaces
 @using Client.Blazor.Auth.Data
+@using System.Security.Claims
 @using WebApiClients.Repositories
 @inject IEntityRepository<Lamps> repo
 @inject NavigationManager NavManager
+@inject TokenStorage tokenStorage
+@inject AuthenticationStateProvider provider
 
 <h3>Lamp Delete</h3>
 
@@ -57,7 +60,7 @@ else
                 <label>@lamp.RoomName</label>
             </dd>
         </dl>
-        <button class="btn btn-primary" @onclick="EditLamp">Delete</button><br/>
+        <button class="btn btn-primary" @onclick="DeleteLamp">Delete</button><br/>
     </div>
 }
 <div>
@@ -77,12 +80,15 @@ else
     protected override async Task OnInitializedAsync()
     {
         webRepo = (WebRepository<Lamps>)repo;
-        webRepo.SetDefaultRequestHeaders(Token.tokens.FirstOrDefault().Value);
+        var authState = await provider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var t = tokenStorage.GetTokenByEmail(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
+        webRepo.SetDefaultRequestHeaders(t);
         _id = Guid.Parse(lampId!);
         lamp = await webRepo.GetById(_id);
     }
 
-    protected async Task EditLamp()
+    protected async Task DeleteLamp()
     {
         lamp = await webRepo.DeleteById(_id);
         NavManager.NavigateTo("/lamps");

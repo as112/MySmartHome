@@ -84,12 +84,28 @@ namespace WebApiClients.Repositories
 
         public async Task<IEnumerable<T>> GetAll(CancellationToken Cancel = default)
         {
-            return await _client.GetFromJsonAsync<IEnumerable<T>>("", Cancel).ConfigureAwait(false) ?? Enumerable.Empty<T>();
+            try
+            {
+                return await _client.GetFromJsonAsync<IEnumerable<T>>("", Cancel).ConfigureAwait(false) ?? Enumerable.Empty<T>();
+            }
+            catch (Exception ex) 
+            {
+                return Enumerable.Empty<T>();
+            }
+            
         }
 
         public async Task<T?> GetById(Guid Id, CancellationToken Cancel = default)
         {
-            return await _client.GetFromJsonAsync<T>($"{Id}", Cancel).ConfigureAwait(false);
+            try
+            {
+                return await _client.GetFromJsonAsync<T>($"{Id}", Cancel).ConfigureAwait(false);
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
+            
         }
 
         public async Task<IEnumerable<T>> GetByName(string name, params Expression<Func<T, object>>[]? includeProperties)

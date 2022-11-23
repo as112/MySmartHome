@@ -130,7 +130,7 @@ namespace MySmartHomeWebApi.Servises
             var sensorsByName = await sensorRepo.GetWithInclude(s => s.TopicUp == topic, null);
             var sensorByName = sensorsByName.OrderBy(s => s.DateTimeUpdate).Last();
 
-            if (DateTime.Now.ToUniversalTime().AddMinutes(-2) >= sensor.DateTimeUpdate)
+            if (DateTime.Now.ToUniversalTime().AddMinutes(-1) >= sensor.DateTimeUpdate)
             {
                 var newSensor = new HistoryData();
                 newSensor.Id = Guid.NewGuid();

@@ -85,15 +85,15 @@ namespace MySmartHomeWebApi.ApiControllers
 
         // POST: api/History/filter
         [HttpPost("filter")]
-        public async Task<ActionResult> GetData([FromBody] DataForFilter data)
+        public async Task<ActionResult> GetData(DataForFilter data)
         {
             if (data.hourAgoFrom < data.hourAgoTo)
                 return NoContent();
             var result = await _repository
                 .GetAllWithPredicate(s =>
                     s.Name == data.name &&
-                    s.DateTimeUpdate >= DateTime.Now.AddHours(-1 * data.hourAgoFrom) &&
-                    s.DateTimeUpdate <= DateTime.Now.AddHours(-1 * data.hourAgoTo))
+                    s.DateTimeUpdate >= DateTime.Now.ToUniversalTime().AddHours(-1 * data.hourAgoFrom) &&
+                    s.DateTimeUpdate <= DateTime.Now.ToUniversalTime().AddHours(-1 * data.hourAgoTo))
                 .ConfigureAwait(false);
             return Ok(result);
         }

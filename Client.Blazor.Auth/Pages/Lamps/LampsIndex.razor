@@ -30,10 +30,10 @@ else
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Status</th>
                 <th>Time Update</th>
                 <th>Topic Up</th>
                 <th>Topic Down</th>
-                <th>Status</th>
                 <th>Room Name</th>
                 <th> </th>
             </tr>
@@ -43,15 +43,18 @@ else
             {
                 <tr>
                     <td>@lamp.Name</td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                            <button type="button" class="btn btn-success" @onclick="@(() => TurnLamp(lamp.Id, true))">Вкл</button>
+                            <button type="button" class="btn btn-warning" @onclick="@(() => TurnLamp(lamp.Id, false))">Выкл</button>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" @bind=@lamp.Status disabled />
+                            </div>
+                        </div>
+                    </td>
                     <td>@lamp.DateTimeUpdate.ToLocalTime()</td>
                     <td>@lamp.TopicUp</td>
                     <td>@lamp.TopicDown</td>
-                    <td>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" @bind=@lamp.Status />
-                        </div>
-                        @*<input type="checkbox" @bind=@lamp.Status />*@
-                    </td>
                     <td>@lamp.RoomName</td>
                     <td>
                         <a href="lamps/edit/@lamp.Id">Edit</a> |
@@ -68,6 +71,7 @@ else
 
     IEnumerable<Lamps>? lamps;
     WebRepository<Lamps> webRepo;
+
     protected override async Task OnInitializedAsync()
     {
         webRepo = (WebRepository<Lamps>)repo;
@@ -76,12 +80,14 @@ else
         var t = tokenStorage.GetTokenByEmail(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
         webRepo.SetDefaultRequestHeaders(t);
         lamps = await webRepo.GetAll();
+        lamps = lamps.OrderBy(s => s.Name);
     }
-    
-    public async Task EditLamp(Guid id)
+
+    public async Task TurnLamp(Guid id, bool status)
     {
         var lamp = lamps.FirstOrDefault(s => s.Id == id);
-        lamp.DateTimeUpdate = DateTime.Now;
+        lamp.Status = status;
         lamp = await webRepo.Update(lamp);
     }
+
 }

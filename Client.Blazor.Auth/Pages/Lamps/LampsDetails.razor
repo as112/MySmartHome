@@ -71,17 +71,19 @@ else
                     <th>Name</th>
                     <th>Status</th>
                     <th>Time Update</th>
+                    <th>Topic</th>
                     <th> </th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var lamp in lampHistory)
                 {
-                    var value = lamp.Value == "true" ? "ON" : "OFF";
+                    var value = lamp.Value == "1" ? "On" : "Off";
                     <tr>
                         <td>@lamp.Name</td>
                         <td>@value</td>
                         <td>@lamp.DateTimeUpdate.ToLocalTime()</td>
+                        <td>@lamp.Topic</td>
                     </tr>
                 }
             </tbody>
@@ -114,7 +116,7 @@ else
         webRepo.SetDefaultRequestHeaders(_token);
         _id = Guid.Parse(lampId!);
         lamp = await webRepo.GetById(_id);
-        lampHistory = await GetData(lamp.Name, 24, 0);
+        lampHistory = await GetData(lamp.Name, 72, 0);
     }
 
     private async Task<IEnumerable<HistoryData>?> GetData(string lampName, int _hourAgoFrom, int _hourAgoTo)

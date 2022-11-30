@@ -24,7 +24,8 @@ namespace MySmartHomeWebApi.Data
         public async Task<T> Add(T item, CancellationToken Cancel = default)
         {
             if (item is null) throw new ArgumentNullException(nameof(item));
-            await _db.AddAsync(item, Cancel).ConfigureAwait(false);
+            //await _db.AddAsync(item, Cancel).ConfigureAwait(false);
+            await Set.AddAsync(item, Cancel).ConfigureAwait(false);
             await _db.SaveChangesAsync(Cancel).ConfigureAwait(false);
             return item;
         }

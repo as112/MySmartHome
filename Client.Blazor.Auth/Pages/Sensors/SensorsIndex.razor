@@ -7,11 +7,6 @@
 @using Client.Blazor.Auth.Data
 @using System.Security.Claims
 @using WebApiClients.Repositories
-@using Plotly.Blazor.LayoutLib
-@using Plotly.Blazor.Traces.ScatterLib
-@using Title = Plotly.Blazor.LayoutLib.Title
-@using YAxis = Plotly.Blazor.LayoutLib.YAxis
-@using Plotly.Blazor.LayoutLib.YAxisLib
 
 @inject IEntityRepository<Sensors> repo
 @inject TokenStorage tokenStorage
@@ -67,35 +62,6 @@ else
     IEnumerable<Sensors>? sensors;
     WebRepository<Sensors> webRepo;
 
-    private PlotlyChart? chart;
-    private Config config = new()
-        {
-            Responsive = true
-        };
-    private Layout layout = new()
-        {
-
-            Title = new Title { Text = "Scatter" },
-            YAxis = new List<YAxis>
-            {
-                new()
-                {
-                    Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Scatter Unit" }
-                }
-            }
-        };
-
-    private IList<ITrace> data = new List<ITrace>
-    {
-        new Scatter
-        {
-            Name = "ScatterTrace",
-            Mode = ModeFlag.Lines | ModeFlag.Markers,
-            X = new List<object>(),
-            Y = new List<object>()
-        }
-    };
-
     protected override async Task OnInitializedAsync()
     {
         webRepo = (WebRepository<Sensors>)repo;
@@ -109,81 +75,16 @@ else
 
     }
 
-    private async Task AddScatter(string sensorName, List<double> value, List<DateTime> time)
-    {
-        var (x, y) = GenerateData(value, time);
-        chart.Layout.Title.Text = sensorName;
-        await chart.AddTrace(new Scatter
-            {
-                Name = sensorName,
-                Mode = ModeFlag.Lines | ModeFlag.Markers,
-                X = x,
-                Y = y
-            });
-    }
-
-    private async Task ExtendData(string sensorName, List<double> value, List<DateTime> time)
-    {
-
-        if (!(chart.Data.FirstOrDefault() is Scatter scatter))
-        {
-            return;
-        }
-        chart.Layout.Title.Text = sensorName;
-        var (x, y) = GenerateData(value, time);
-        if (!scatter.X.Any() || !scatter.Y.Any())
-        {
-            scatter.X.AddRange(x);
-            scatter.Y.AddRange(y);
-            await chart.React();
-        }
-        else
-        {
-            await chart.ExtendTrace(x, y, data.IndexOf(scatter));
-        }
-    }
-
-    private static (List<object> X, List<object> Y) GenerateData(List<double> value, List<DateTime> time)
-    {
-        var x = new List<object>();
-        var y = new List<object>();
-
-        for (var i = 0; i < value.Count; i++)
-        {
-            x.Add(time[i]);
-            y.Add(value[i]);
-        }
-        return (x, y);
-    }
-    private bool isReload = true;
+    private bool isReload = false;
     private async void ReloadData()
     {
-        while (isReload)
+        do
         {
-            await Task.Delay(10000);
             sensors = await webRepo.GetAll();
             sensors = sensors.OrderBy(s => s.Name);
             StateHasChanged();
+            await Task.Delay(10000);
 
-            //foreach (var sensor in sensors)
-            //{
-            //    var (v, t) = keyValues[sensor.Name];
-            //    var value = double.Parse(sensor.Value.Replace('.', ','));
-            //    v.Add(value);
-            //    t.Add(sensor.DateTimeUpdate.ToLocalTime());
-            //    keyValues[sensor.Name] = (v, t);
-            //}
-            //await chart.Clear();
-
-
-            //var (x, y) = keyValues["Обратка"];
-            //await AddScatter("Обратка", x, y);
-
-            //var (v1, t1) = keyValues["Подача"];
-            //await AddScatter("Подача", v1, t1);
-
-            //var (v2, t2) = keyValues["Термопара"];
-            //await AddScatter("Термопара", v2, t2);
-        }
+        } while (isReload);
     }
 }

@@ -1,0 +1,112 @@
+﻿@page "/rooms/add"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+@using MySmartHomeWebApi.Models
+@using MySmartHomeWebApi.Data.Interfaces
+@using Client.Blazor.Auth.Data
+@using System.Security.Claims
+@using WebApiClients.Repositories
+
+@inject TokenStorage tokenStorage
+@inject AuthenticationStateProvider provider
+@inject IEntityRepository<Rooms> roomRepo
+@inject IEntityRepository<Lamps> lampRepo
+@inject IEntityRepository<Sensors> sensorRepo
+@inject NavigationManager NavManager
+
+<h3>RoomsAdd</h3>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            <label>Name</label>
+        </dt>
+        <dd class="col-sm-10">
+            <input @bind=@room.Name />
+        </dd>
+        <dt class="col-sm-2">
+            <label>Sensors</label>
+        </dt>
+        <dd class="col-sm-10">
+            <datalist @bind=@room.Sensors />
+            <button class="btn btn-primary" @onclick="AddSensor">Add sensor</button>
+        </dd>
+        
+        <dt class="col-sm-2">
+            <label>Lamps</label>
+        </dt>
+        <dd class="col-sm-10">
+            <datalist @bind=@room.Lamps />
+            <button class="btn btn-primary" @onclick="AddLamp">Add lamp</button>
+            @if (isLampVisible)
+            {
+                <select @bind="selectedLamps" multiple>
+                    @foreach (var lamp in lamps)
+                    {
+                        <option value="@lamp.Name">@lamp.Name</option>
+                    }
+
+                </select>
+            }
+        </dd>
+    </dl>
+    <button class="btn btn-primary" @onclick="AddRoom">Add room</button>
+</div>
+<div>
+    <a href="rooms">Back to List</a>
+</div>
+
+
+@code {
+    Rooms room = new Rooms();
+    IEnumerable<Lamps>? lamps;
+    IEnumerable<Sensors>? sensors;
+    bool isLampVisible = false;
+    bool isSensorVisible = false;
+    string[] selectedLamps = new string[] { };
+    List<Sensors> selectedSensors = new();
+
+    WebRepository<Lamps> webRepoLamp;
+
+    protected override async Task OnInitializedAsync()
+    {
+        webRepoLamp = (WebRepository<Lamps>)lampRepo;
+        var webRepoSensor = (WebRepository<Sensors>)sensorRepo;
+
+        var authState = await provider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var t = tokenStorage.GetTokenByEmail(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
+        webRepoLamp.SetDefaultRequestHeaders(t);
+        webRepoSensor.SetDefaultRequestHeaders(t);
+
+        lamps = await webRepoLamp.GetAll();
+        sensors = await webRepoSensor.GetAll();
+
+    }
+
+    protected async Task AddRoom()
+    {
+        var webRepo = (WebRepository<Rooms>)roomRepo;
+        var authState = await provider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var t = tokenStorage.GetTokenByEmail(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
+        webRepo.SetDefaultRequestHeaders(t);
+
+        room.Id = Guid.NewGuid();
+
+        await webRepo.Add(room);
+        NavManager.NavigateTo("/rooms");
+    }
+
+    private void AddLamp()
+    {
+        isLampVisible = true;
+    }
+
+    private void AddSensor()
+    {
+
+    }
+}

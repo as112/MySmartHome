@@ -49,9 +49,8 @@ namespace MySmartHomeWebApi.ApiControllers
 
         // PUT api/<SensorController>/5
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] Sensors sensor)
+        public async Task<IActionResult> Put(Sensors sensor)
         {
-            sensor.DateTimeUpdate = DateTime.Now;
             return Ok(await _repository.Update(sensor));
             //var oldSensor = await _repository.GetById(id).ConfigureAwait(false);
             //await _repository.Delete(oldSensor!).ConfigureAwait(false);

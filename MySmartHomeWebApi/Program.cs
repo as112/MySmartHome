@@ -8,6 +8,7 @@ using MySmartHomeWebApi.Data.Interfaces;
 using MySmartHomeWebApi.Models;
 using Microsoft.AspNetCore.Identity;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,7 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
         };
     });
-
+builder.WebHost.UseUrls(new[] { "http://*:5000" });
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,8 +1,9 @@
 #!/bin/bash
 
-mkdir -p webapipublish
+mkdir -p ~/webapipublish
 
+dotnet build -c Release
 
-dotnet publish MySmartHomeWebAPI.csproj -c Release -o webapipublish
+dotnet publish -c Release --no-build -o ~/webapipublish
 
-dotnet run --project MySmartHomeWebAPI.csproj
+dotnet run

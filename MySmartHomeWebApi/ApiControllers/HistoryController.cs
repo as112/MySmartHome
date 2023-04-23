@@ -14,7 +14,7 @@ namespace MySmartHomeWebApi.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class HistoryController : ControllerBase
     {
         private readonly DbHistoryRepository<HistoryData> _repository;

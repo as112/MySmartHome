@@ -9,7 +9,7 @@ namespace MySmartHomeWebApi.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class SensorsController : Controller
     {
         private readonly ILogger<SensorsController> _logger;
@@ -52,9 +52,6 @@ namespace MySmartHomeWebApi.ApiControllers
         public async Task<IActionResult> Put(Sensors sensor)
         {
             return Ok(await _repository.Update(sensor));
-            //var oldSensor = await _repository.GetById(id).ConfigureAwait(false);
-            //await _repository.Delete(oldSensor!).ConfigureAwait(false);
-            //return Ok(await _repository.Add(sensor).ConfigureAwait(false));
         }
 
         // DELETE api/<SensorController>/5

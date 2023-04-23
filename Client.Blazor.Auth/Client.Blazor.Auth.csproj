@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-Client.Blazor.Auth-dbaf49d6-8666-4a11-9cb7-b67bc9366134</UserSecretsId>
+
+	  <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +26,12 @@
   <ItemGroup>
     <ProjectReference Include="..\MySmartHomeWebApi\MySmartHomeWebApi.csproj" />
     <ProjectReference Include="..\WebApiClients\WebApiClients.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\launchSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

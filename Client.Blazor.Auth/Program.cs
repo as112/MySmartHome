@@ -31,15 +31,13 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = false;
 
 });
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorPages().AddNewtonsoftJson(options => 
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddTransient<Token>();
-builder.Services.AddSingleton<TokenStorage>();
+builder.Services.AddTransient<Token>();builder.Services.AddSingleton<ITokenStorage, TokenInCookie>();
 
 var webApiAddr = builder.Configuration.GetSection("WebApi").Value;
 builder.Services.AddTransient(sp =>

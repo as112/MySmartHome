@@ -25,12 +25,12 @@ namespace Client.Blazor.Auth.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly HttpClient _client;
-        private readonly TokenStorage _tokenStorage;
+        private readonly ITokenStorage _tokenStorage;
 
         public LoginModel(SignInManager<IdentityUser> signInManager, 
             ILogger<LoginModel> logger, 
             HttpClient client,
-            TokenStorage tokenStorage)
+            ITokenStorage tokenStorage)
         {
             _signInManager = signInManager;
             _logger = logger;
@@ -160,7 +160,7 @@ namespace Client.Blazor.Auth.Areas.Identity.Pages.Account
                 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK && token is not null)
                 {
-                    _tokenStorage.tokens.Add(token);
+                    _tokenStorage.SetToken(token);
                     return true;
                 }
                 else

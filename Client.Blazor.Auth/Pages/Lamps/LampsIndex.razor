@@ -8,7 +8,7 @@
 @using System.Security.Claims
 @using WebApiClients.Repositories
 
-@inject TokenStorage tokenStorage
+@inject ITokenStorage tokenStorage
 @inject AuthenticationStateProvider provider
 @inject IEntityRepository<Lamps> repo
 
@@ -77,7 +77,7 @@ else
         webRepo = (WebRepository<Lamps>)repo;
         var authState = await provider.GetAuthenticationStateAsync();
         var user = authState.User;
-        var t = tokenStorage.GetTokenByEmail(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
+        var t = tokenStorage.GetToken(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
         webRepo.SetDefaultRequestHeaders(t);
         lamps = await webRepo.GetAll();
         lamps = lamps.OrderBy(s => s.Name);

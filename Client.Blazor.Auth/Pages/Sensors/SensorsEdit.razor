@@ -1,4 +1,4 @@
-﻿@page "/sensors/edit/{lampId}"
+﻿@page "/sensors/edit/{sensorId}"
 @using System.Net.Http
 @using System.Net.Http.Json
 @using System.Threading.Tasks
@@ -7,13 +7,14 @@
 @using Client.Blazor.Auth.Data
 @using System.Security.Claims
 @using WebApiClients.Repositories
-@inject IEntityRepository<Lamps> repo
-@inject TokenStorage tokenStorage
+@inject IEntityRepository<Sensors> repo
+@inject ITokenStorage tokenStorage
 @inject AuthenticationStateProvider provider
+@inject NavigationManager NavManager
 
-<h3>Lamp Edit</h3>
+<h3>Sensor Edit</h3>
 
-@if (lamp == null)
+@if (sensor == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -26,34 +27,34 @@ else
                 <label>Name</label>
             </dt>
             <dd class="col-sm-10">
-                <input @bind=@lamp.Name />
+                <input @bind=@sensor.Name />
             </dd>
             <dt class="col-sm-2">
-                <label>Status</label>
+                <label>Value</label>
             </dt>
             <dd class="col-sm-10">
-                <input type="checkbox" @bind=@lamp.Status />
+                <input @bind=@sensor.Value disabled/>
             </dd>
             <dt class="col-sm-2">
                 <label>Topic Up</label>
             </dt>
             <dd class="col-sm-10">
-                <input @bind=@lamp.TopicUp />
+                <input @bind=@sensor.TopicUp />
             </dd>
             <dt class="col-sm-2">
                 <label>Topic Down</label>
             </dt>
             <dd class="col-sm-10">
-                <input @bind=@lamp.TopicDown />
+                <input @bind=@sensor.TopicDown />
             </dd>
             <dt class="col-sm-2">
                 <label>Room Name</label>
             </dt>
             <dd class="col-sm-10">
-                <input @bind=@lamp.RoomName />
+                <input @bind=@sensor.RoomName />
             </dd>
         </dl>
-        <button class="btn btn-primary" @onclick="EditLamp">Edit lamp</button>
+        <button class="btn btn-primary" @onclick="EditSensor">Edit sensor</button>
     </div>
     
     <div>
@@ -63,28 +64,29 @@ else
 
 @code {
 
-    Lamps? lamp;
+    Sensors? sensor;
 
     [Parameter]
-    public string? lampId { get; set; }
+    public string? sensorId { get; set; }
     private Guid _id;
 
-    WebRepository<Lamps>? webRepo;
+    WebRepository<Sensors>? webRepo;
 
     protected override async Task OnInitializedAsync()
     {
-        webRepo = (WebRepository<Lamps>)repo;
+        webRepo = (WebRepository<Sensors>)repo;
         var authState = await provider.GetAuthenticationStateAsync();
         var user = authState.User;
-        var t = tokenStorage.GetTokenByEmail(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
+        var t = tokenStorage.GetToken(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
         webRepo.SetDefaultRequestHeaders(t);
-        _id = Guid.Parse(lampId!);
-        lamp = await webRepo.GetById(_id);
+        _id = Guid.Parse(sensorId!);
+        sensor = await webRepo.GetById(_id);
     }
 
-    protected async Task EditLamp()
+    protected async Task EditSensor()
     {
-        lamp.DateTimeUpdate = DateTime.Now;
-        lamp = await webRepo.Update(lamp);
+        sensor.DateTimeUpdate = DateTime.Now;
+        sensor = await webRepo.Update(sensor);
+        NavManager.NavigateTo("/sensors");
     }
 }

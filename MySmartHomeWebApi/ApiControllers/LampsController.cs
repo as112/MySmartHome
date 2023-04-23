@@ -12,7 +12,7 @@ namespace MySmartHomeWebApi.ApiControllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     public class LampsController : ControllerBase
     {
         private readonly ILogger<LampsController> _logger;

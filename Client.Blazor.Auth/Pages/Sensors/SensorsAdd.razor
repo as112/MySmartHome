@@ -7,12 +7,12 @@
 @using Client.Blazor.Auth.Data
 @using System.Security.Claims
 @using WebApiClients.Repositories
-@inject IEntityRepository<Lamps> repo
+@inject IEntityRepository<Sensors> repo
 @inject NavigationManager NavManager
-@inject TokenStorage tokenStorage
+@inject ITokenStorage tokenStorage
 @inject AuthenticationStateProvider provider
 
-<h3>LampsAdd</h3>
+<h3>Sensors Add</h3>
 
 <div>
     <hr />
@@ -21,47 +21,47 @@
             <label>Name</label>
         </dt>
         <dd class="col-sm-10">
-            <input @bind=@lamp.Name/>
+            <input @bind=@sensor.Name/>
         </dd>
         <dt class="col-sm-2">
             <label>Topic Up</label>
         </dt>
         <dd class="col-sm-10">
-            <input @bind=@lamp.TopicUp />
+            <input @bind=@sensor.TopicUp />
         </dd>
         <dt class="col-sm-2">
             <label>Topic Down</label>
         </dt>
         <dd class="col-sm-10">
-            <input @bind=@lamp.TopicDown />
+            <input @bind=@sensor.TopicDown />
         </dd>
         <dt class="col-sm-2">
             <label>Room Name</label>
         </dt>
         <dd class="col-sm-10">
-            <input @bind=@lamp.RoomName />
+            <input @bind=@sensor.RoomName />
         </dd>
     </dl>
-    <button class="btn btn-primary" @onclick="AddLamp">Add lamp</button>
+    <button class="btn btn-primary" @onclick="AddLamp">Add sensor</button>
 </div>
 <div>
     <a href="sensors">Back to List</a>
 </div>
 @code {
-    Lamps lamp = new Lamps();
+    Sensors sensor = new Sensors();
 
     protected async Task AddLamp()
     {
-        var webRepo = (WebRepository<Lamps>)repo;
+        var webRepo = (WebRepository<Sensors>)repo;
         var authState = await provider.GetAuthenticationStateAsync();
         var user = authState.User;
-        var t = tokenStorage.GetTokenByEmail(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
+        var t = tokenStorage.GetToken(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
         webRepo.SetDefaultRequestHeaders(t);
 
-        lamp.Id = Guid.NewGuid();
-        lamp.DateTimeUpdate = DateTime.Now;
-        lamp.Status = false;
-        await webRepo.Add(lamp);
+        sensor.Id = Guid.NewGuid();
+        sensor.DateTimeUpdate = DateTime.Now;
+        sensor.Value = null;
+        await webRepo.Add(sensor);
         NavManager.NavigateTo("/sensors");
     }
 }

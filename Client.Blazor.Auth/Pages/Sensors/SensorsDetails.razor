@@ -6,6 +6,7 @@
 @using MySmartHomeWebApi.Data.Interfaces
 @using Client.Blazor.Auth.Data
 @using System.Security.Claims
+@using System.Globalization;
 @using WebApiClients.Repositories
 @using Plotly.Blazor.LayoutLib
 @using Plotly.Blazor.Traces.ScatterLib
@@ -15,7 +16,7 @@
 
 @inject HttpClient Http
 @inject IEntityRepository<Sensors> repo
-@inject TokenStorage tokenStorage
+@inject ITokenStorage tokenStorage
 @inject AuthenticationStateProvider provider
 
 <h3>Sensor Details</h3>
@@ -133,9 +134,10 @@ else
     {
         var authState = await provider.GetAuthenticationStateAsync();
         var user = authState.User;
-        _token = tokenStorage.GetTokenByEmail(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
+        _token = tokenStorage.GetToken(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
 
         DateFrom = DateTime.Now.AddDays(-1);
+
         var sensor = await GetSensor(sensorId!);
         var(values, times) = await GetData(sensor.Name, 12, 0);
         chart.Layout.Title.Text = sensor.Name;
@@ -152,13 +154,16 @@ else
         await AddScatter(sensor.Name, values, times);
     }
 
-    private async Task<Sensors?> GetSensor(string id)
+    private async Task<Sensors> GetSensor(string id)
     {
         var _id = Guid.Parse(id);
         var webRepo = (WebRepository<Sensors>)repo;
-      
+
         webRepo.SetDefaultRequestHeaders(_token);
-        return await webRepo.GetById(_id);
+
+        var sensor = await webRepo.GetById(_id);
+
+        return sensor ?? new Sensors();
     }
 
     private async Task<(double[] values, DateTime[] times)> GetData(string sensorName, int _hourAgoFrom, int _hourAgoTo)
@@ -183,8 +188,11 @@ else
         sensorHistory = sensorHistory.OrderBy(s => s.DateTimeUpdate);
 
         var times = sensorHistory.Select(s => s.DateTimeUpdate.ToLocalTime()).ToArray();
-        var values = sensorHistory.Select(s => double.Parse(s.Value.Replace('.', ','))).ToArray();
-        return (values, times);
+
+        var values = sensorHistory.Select(s => s.Value).ToArray();
+        var valuesDouble = values.Select(d => double.Parse(d, CultureInfo.InvariantCulture)).ToArray();
+        //var values = sensorHistory.Select(s => double.Parse(s.Value.Replace('.', ','))).ToArray();
+        return (valuesDouble, times);
     }
 
     private async Task AddScatter(string sensorName, double[] value, DateTime[] time)

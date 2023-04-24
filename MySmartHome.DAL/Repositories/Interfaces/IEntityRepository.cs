@@ -1,8 +1,8 @@
-﻿using MySmartHomeWebApi.Entities;
+﻿using MySmartHome.DAL.Entities;
 using System;
 using System.Linq.Expressions;
 
-namespace MySmartHomeWebApi.Data.Interfaces
+namespace MySmartHome.DAL.Repositories.Interfaces
 {
     public interface IEntityRepository<T> : IBaseRepository<T> where T : Entity
     {

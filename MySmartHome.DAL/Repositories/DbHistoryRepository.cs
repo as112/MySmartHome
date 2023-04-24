@@ -1,13 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
-using MySmartHomeWebApi.Data.Interfaces;
-using MySmartHomeWebApi.Entities;
-using MySmartHomeWebApi.Models;
-using System.Collections.Generic;
+using MySmartHome.DAL.Repositories.Interfaces;
+using MySmartHome.DAL.Models;
 using System.Linq.Expressions;
-using System.Xml.Linq;
 
-namespace MySmartHomeWebApi.Data
+namespace MySmartHome.DAL.Data
 {
     public class DbHistoryRepository<T> : IHistoryRepository<T> where T : HistoryData, new()
     {

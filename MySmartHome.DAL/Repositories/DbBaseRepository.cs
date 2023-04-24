@@ -1,13 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MySmartHomeWebApi.Data.Interfaces;
-using MySmartHomeWebApi.Entities;
-using MySmartHomeWebApi.Models;
-using NuGet.Protocol.Core.Types;
-using System.Drawing.Imaging;
+using MySmartHome.DAL.Entities;
 using System.Linq.Expressions;
-using System.Reflection.Metadata;
+using MySmartHome.DAL.Repositories.Interfaces;
+using MySmartHome.DAL.Data;
+using Microsoft.Extensions.Configuration;
 
-namespace MySmartHomeWebApi.Data
+namespace MySmartHome.DAL.Repositories
 {
     public class DbBaseRepository<T> : IBaseRepository<T> where T : BaseEntity, new()
     {

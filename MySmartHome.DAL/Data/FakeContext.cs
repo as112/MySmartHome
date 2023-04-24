@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MySmartHomeWebApi.Models;
+using MySmartHome.DAL.Models;
 
-namespace MySmartHomeWebApi.Data
+namespace MySmartHome.DAL.Data
 {
     public class FakeContext : DbContext
     {
@@ -15,7 +15,6 @@ namespace MySmartHomeWebApi.Data
         public DbSet<Lamps>? Lamps { get; set; }
         public DbSet<Rooms>? Rooms { get; set; }
         public DbSet<Sensors>? Sensors { get; set; }
-        //public DbSet<Users>? Persons { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

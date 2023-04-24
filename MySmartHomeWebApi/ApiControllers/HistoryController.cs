@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MySmartHomeWebApi.Data;
-using MySmartHomeWebApi.Data.Interfaces;
-using MySmartHomeWebApi.Models;
+using MySmartHome.DAL.Repositories.Interfaces;
+using MySmartHome.DAL.Models;
+using MySmartHome.DAL.Data;
 
 namespace MySmartHomeWebApi.ApiControllers
 {

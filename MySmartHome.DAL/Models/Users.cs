@@ -1,6 +1,6 @@
 ﻿
 
-namespace MySmartHomeWebApi.Models
+namespace MySmartHome.DAL.Models
 {
     public class Users
     {

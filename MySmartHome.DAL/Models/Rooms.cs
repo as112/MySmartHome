@@ -1,6 +1,6 @@
-﻿using MySmartHomeWebApi.Entities;
+﻿using MySmartHome.DAL.Entities;
 
-namespace MySmartHomeWebApi.Models
+namespace MySmartHome.DAL.Models
 {
     public class Rooms : Entity
     {

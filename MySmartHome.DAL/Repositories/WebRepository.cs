@@ -1,5 +1,5 @@
-﻿using MySmartHomeWebApi.Data.Interfaces;
-using MySmartHomeWebApi.Entities;
+﻿using MySmartHome.DAL.Entities;
+using MySmartHome.DAL.Repositories.Interfaces;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http.Json;
@@ -117,6 +117,16 @@ namespace WebApiClients.Repositories
                .ReadFromJsonAsync<IEnumerable<T>>()
                .ConfigureAwait(false);
             return result ?? Enumerable.Empty<T>();
+        }
+
+        public Task<IEnumerable<T>> GetWithInclude(params Expression<Func<T, object>>[] includeProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<T>> GetWithInclude(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[]? includeProperties)
+        {
+            throw new NotImplementedException();
         }
     }
 }

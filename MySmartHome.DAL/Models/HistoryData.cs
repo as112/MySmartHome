@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MySmartHomeWebApi.Entities;
+﻿using MySmartHome.DAL.Entities;
 using System.ComponentModel.DataAnnotations;
 
-namespace MySmartHomeWebApi.Models
+namespace MySmartHome.DAL.Models
 {
     public class HistoryData : BaseEntity
     {

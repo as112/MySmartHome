@@ -2,11 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using MySmartHomeWebApi.Data;
-using MySmartHomeWebApi.Data.Interfaces;
+using MySmartHome.DAL.Data;
 using MySmartHomeWebApi.Models;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Security.Claims;
 
 namespace MySmartHomeWebApi.ApiControllers
@@ -53,39 +51,6 @@ namespace MySmartHomeWebApi.ApiControllers
             return Ok(response);
         }
 
-        //[HttpPost("SignUp")]
-        //public async Task<IActionResult> SignIn(Persons user)
-        //{
-        //    var isExist = await _repository.GetByEmail(user.Email);
-        //    if(isExist is not null) 
-        //        return Conflict(user.Email);
-        //    user.Id = Guid.NewGuid();
-        //    user.Role = Roles.Users;
-        //    user.Password = passwordHasher.HashPassword(user, user.Password);
-        //    return Ok(await _repository.Add(user));
-        //}
-
-        //[HttpPost("user")]
-        //public async Task<ActionResult> GetByEmail([FromBody] string email)
-        //{
-        //    var person = await _repository.GetByEmail(email);
-        //    return person is null ? NotFound() : Ok(person);
-        //}
-
-        //// PUT api/<LoginController>/edit
-        //[HttpPut("edit")]
-        //public async Task<IActionResult> Put([FromBody] Persons user)
-        //{
-        //    user.Password = passwordHasher.HashPassword(user, user.Password);
-        //    return Ok(await _repository.Update(user));
-        //}
-
-        //// DELETE api/<LoginController>/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(Guid id)
-        //{
-        //    return Ok(await _repository.DeleteById(id));
-        //}
 
     }
 }

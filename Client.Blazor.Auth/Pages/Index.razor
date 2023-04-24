@@ -2,7 +2,7 @@
 @using System.Net.Http
 @using System.Net.Http.Json
 @using System.Threading.Tasks
-@using MySmartHomeWebApi.Models
+@using MySmartHome.DAL.Models
 @using Client.Blazor.Auth.Data
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
@@ -26,9 +26,7 @@
     <div>Управлять электроприборами и бытовой техникой через умные розетки</div>
     <div>Следить за энергопотреблением и экономить электроэнергию</div>
 </div><br />
-<div>
-Если у вас возникнут какие-либо вопросы или проблемы с системой, пожалуйста, свяжитесь с нашей службой поддержки по телефону: 888-555-1212 или напиши
-</div>
+
 @code{
 
     private string authMessage;

@@ -4,11 +4,9 @@ using MySmartHomeWebApi.Data;
 using MySmartHomeWebApi.Servises;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using MySmartHomeWebApi.Data.Interfaces;
-using MySmartHomeWebApi.Models;
-using Microsoft.AspNetCore.Identity;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-using Microsoft.AspNetCore.Identity.UI.Services;
+using MySmartHome.DAL.Data;
+using MySmartHome.DAL.Repositories.Interfaces;
+using MySmartHome.DAL.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

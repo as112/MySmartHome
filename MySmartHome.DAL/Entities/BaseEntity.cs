@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MySmartHomeWebApi.Entities
+namespace MySmartHome.DAL.Entities
 {
     public class BaseEntity
     {

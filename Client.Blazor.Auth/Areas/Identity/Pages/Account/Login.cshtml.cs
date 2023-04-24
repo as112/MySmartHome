@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using MySmartHomeWebApi.Models;
+using MySmartHome.DAL.Models;
 using static System.Net.WebRequestMethods;
 using Client.Blazor.Auth.Data;
 

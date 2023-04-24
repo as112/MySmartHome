@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MySmartHomeWebApi.Models;
+using MySmartHome.DAL.Models;
 
-namespace MySmartHomeWebApi.Data
+namespace MySmartHome.DAL.Data
 {
     public class DataContext : DbContext
     {

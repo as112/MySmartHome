@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MySmartHomeWebApi.Data;
-using MySmartHomeWebApi.Models;
-using Microsoft.EntityFrameworkCore;
-using MySmartHomeWebApi.Data.Interfaces;
-using NuGet.Protocol.Plugins;
 using Microsoft.AspNetCore.Authorization;
+using MySmartHome.DAL.Models;
+using MySmartHome.DAL.Repositories.Interfaces;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace MySmartHomeWebApi.ApiControllers
 {
@@ -53,9 +50,6 @@ namespace MySmartHomeWebApi.ApiControllers
         public async Task<IActionResult> Put([FromBody] Rooms room)
         {
             return Ok(await _repository.Update(room));
-            //var oldRoom = await _repository.GetById(id).ConfigureAwait(false);
-            //await _repository.Delete(oldRoom!).ConfigureAwait(false);
-            //return Ok(await _repository.Add(room).ConfigureAwait(false));
         }
 
         // DELETE api/<RoomsController>/5

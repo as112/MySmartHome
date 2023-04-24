@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace MySmartHomeWebApi.Data
+namespace MySmartHome.DAL.Data
 {
     public class UserDbContext : IdentityDbContext
     {

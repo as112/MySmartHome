@@ -1,5 +1,8 @@
-﻿using MySmartHomeWebApi.Data.Interfaces;
-using MySmartHomeWebApi.Entities;
+﻿using Microsoft.Extensions.Configuration;
+using MySmartHome.DAL.Data;
+using MySmartHome.DAL.Entities;
+using MySmartHome.DAL.Repositories;
+using MySmartHome.DAL.Repositories.Interfaces;
 using System.Linq.Expressions;
 
 namespace MySmartHomeWebApi.Data

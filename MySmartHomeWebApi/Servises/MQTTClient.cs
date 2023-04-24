@@ -1,8 +1,8 @@
 ﻿using MQTTnet;
 using MQTTnet.Client;
-using MySmartHomeWebApi.Data;
-using MySmartHomeWebApi.Data.Interfaces;
-using MySmartHomeWebApi.Models;
+using MySmartHome.DAL.Data;
+using MySmartHome.DAL.Models;
+using MySmartHome.DAL.Repositories.Interfaces;
 using System.Text;
 
 
@@ -11,9 +11,9 @@ namespace MySmartHomeWebApi.Servises
     public class MQTTClient
     {
         private readonly ILogger<MQTTClient> _logger;
-        private readonly DbHistoryRepository<HistoryData> _historyRepository;
-        private readonly DbEntityRepository<Lamps> _lampRepo;
-        private readonly DbEntityRepository<Sensors> _sensorRepo;
+        private readonly IHistoryRepository<HistoryData> _historyRepository;
+        private readonly IEntityRepository<Lamps> _lampRepo;
+        private readonly IEntityRepository<Sensors> _sensorRepo;
         private readonly IEnumerable<string> _lampsTopics;
         private readonly IEnumerable<string> _sensorsTopics;
 
@@ -34,9 +34,9 @@ namespace MySmartHomeWebApi.Servises
             IHistoryRepository<HistoryData> historyRepository)
         {
             _logger = logger;
-            _historyRepository = (DbHistoryRepository<HistoryData>)historyRepository;
-            _lampRepo = (DbEntityRepository<Lamps>)lampRepo;
-            _sensorRepo = (DbEntityRepository<Sensors>)sensorRepo;
+            _historyRepository = historyRepository;
+            _lampRepo = lampRepo;
+            _sensorRepo = sensorRepo;
             var allLamps = _lampRepo.GetAll().Result;
             _lampsTopics = allLamps.Select(s => s.TopicDown!) ?? Enumerable.Empty<string>();
             var allSensors = _sensorRepo.GetAll().Result;
@@ -123,7 +123,7 @@ namespace MySmartHomeWebApi.Servises
                 await AddToDbSensor(_sensorRepo, _historyRepository, arg.ApplicationMessage.Topic, Encoding.UTF8.GetString(arg.ApplicationMessage.Payload));
             }
         }
-        private async Task AddToDbSensor(DbEntityRepository<Sensors> sensorRepo, DbHistoryRepository<HistoryData> historyRepo, string topic, string value)
+        private async Task AddToDbSensor(IEntityRepository<Sensors> sensorRepo, IHistoryRepository<HistoryData> historyRepo, string topic, string value)
         {
             var sensors = await historyRepo.GetAllByTopic(topic);
             var sensor = sensors.Count() == 0 ? new HistoryData { Topic = topic } : sensors.OrderBy(s => s.DateTimeUpdate).Last();
@@ -151,7 +151,7 @@ namespace MySmartHomeWebApi.Servises
             _logger.LogError($"Sensor {sensorByName.Name} has been updating");
         }
 
-        private async Task AddToDbLamp(DbEntityRepository<Lamps> lampRepo, DbHistoryRepository<HistoryData> historyRepo, string topic, string value)
+        private async Task AddToDbLamp(IEntityRepository<Lamps> lampRepo, IHistoryRepository<HistoryData> historyRepo, string topic, string value)
         {
             var lampsFromHistory = await historyRepo.GetAllByTopic(topic);
             var lastLampFromHistory = lampsFromHistory.Count() == 0 ? new HistoryData { Topic = topic } : lampsFromHistory.OrderBy(s => s.DateTimeUpdate).Last();

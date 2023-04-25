@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MySmartHome.DAL.Models;
 using MySmartHome.DAL.Repositories.Interfaces;
-using MySmartHomeWebApi.Data;
+using MySmartHome.DAL.Data;
 
 namespace MySmartHomeWebApi.ApiControllers
 {
@@ -11,12 +11,12 @@ namespace MySmartHomeWebApi.ApiControllers
     public class SensorsController : Controller
     {
         private readonly ILogger<SensorsController> _logger;
-        private readonly DbEntityRepository<Sensors> _repository;
+        private readonly IEntityRepository<Sensors> _repository;
 
         public SensorsController(ILogger<SensorsController> logger, IEntityRepository<Sensors> repository)
         {
             _logger = logger;
-            _repository = (DbEntityRepository<Sensors>)repository;
+            _repository = repository;
         }
 
         // GET: api/<SensorController>

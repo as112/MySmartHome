@@ -2,8 +2,9 @@
 using MySmartHome.DAL.Repositories.Interfaces;
 using MySmartHome.DAL.Models;
 using System.Linq.Expressions;
+using MySmartHome.DAL.Data;
 
-namespace MySmartHome.DAL.Data
+namespace MySmartHome.DAL.Repositories
 {
     public class DbHistoryRepository<T> : IHistoryRepository<T> where T : HistoryData, new()
     {

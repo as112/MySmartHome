@@ -6,10 +6,9 @@
 @using MySmartHome.DAL.Repositories.Interfaces
 @using Client.Blazor.Auth.Data
 @using System.Security.Claims
-@using WebApiClients.Repositories
+@using MySmartHome.DAL.Repositories
 @inject IEntityRepository<Lamps> repo
 @inject NavigationManager NavManager
-@inject ITokenStorage tokenStorage
 @inject AuthenticationStateProvider provider
 
 <h3>LampsAdd</h3>
@@ -53,10 +52,7 @@
     protected async Task AddLamp()
     {
         var webRepo = (WebRepository<Lamps>)repo;
-        var authState = await provider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        var t = tokenStorage.GetToken(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
-        webRepo.SetDefaultRequestHeaders(t);
+        webRepo.SetDefaultRequestHeaders(provider);
 
         lamp.Id = Guid.NewGuid();
         lamp.DateTimeUpdate = DateTime.Now;
@@ -64,4 +60,5 @@
         await webRepo.Add(lamp);
         NavManager.NavigateTo("/lamps");
     }
+    
 }

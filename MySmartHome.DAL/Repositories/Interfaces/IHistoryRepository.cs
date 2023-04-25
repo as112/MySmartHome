@@ -11,5 +11,6 @@ namespace MySmartHome.DAL.Repositories.Interfaces
         Task<bool> DeleteAllUntilDate(int daysAgo, CancellationToken Cancel = default);
         Task<IEnumerable<T>?> GetAllWithPredicate(Expression<Func<T, bool>> predicate, CancellationToken Cancel = default);
         Task<IEnumerable<T>?> GetAllByTopic(string topic, CancellationToken Cancel = default);
+        Task<IEnumerable<T>?> GetAllByName(string name, CancellationToken Cancel = default);
     }
 }

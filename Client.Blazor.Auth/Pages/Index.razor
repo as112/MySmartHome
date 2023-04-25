@@ -9,23 +9,33 @@
 @inject HttpClient http
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<PageTitle>Index</PageTitle>
-
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+<PageTitle>Smart Home</PageTitle>
 
 <h3>@authMessage</h3>
-<div>
-Умный дом - это система, которая позволяет автоматизировать различные функции в доме с помощью централизованного контроля и управления устройствами через сеть Интернет.
-</div><br />
-<div>
-С помощью системы умного дома вы можете:
 
-    <div>Управлять освещением, температурой и вентиляцией в каждом комнате отдельно</div>
-    <div>Управлять системой безопасности, включая датчики движения, видеонаблюдение и сигнализацию</div>
-    <div>Управлять электроприборами и бытовой техникой через умные розетки</div>
-    <div>Следить за энергопотреблением и экономить электроэнергию</div>
+<br />
+
+<div>
+    Hello everyone! I would like to present to you my project. My project is a web application 
+    based on Blazor technology, which interacts with a server-side 
+    based on RestAPI, and a PostgreSQL database. The front-end app is hosted on Azure app service, 
+    while the back-end and the database are located in Docker containers on AWS ec2 instance.
 </div><br />
+<div>
+    In my server-side, I used MQTT protocol to exchange messages between the sensors and the server. 
+    This protocol provides reliable delivery of messages in low bandwidth network conditions and 
+    intermittent client connectivity, making my application more flexible and resilient to network failures.
+</div>
+<br />
+<div>
+    My client application allows unauthenticated users to view data in the "Sensors" section. 
+    However, to perform any actions or gain full access to the application's functionality, 
+    user authentication is required. For this purpose, I used JWT token-based authentication technology.
+</div>
+<br />
+
+
+<SurveyPrompt Title="Thank you for your attention!" />
 
 @code{
 
@@ -42,13 +52,13 @@
 
         if (user1.Identity.IsAuthenticated)
         {
-            authMessage = $"Добро пожаловать, {user1.Identity.Name}";
+            authMessage = $"Welcome, {user1.Identity.Name}";
             claims = user1.Claims;
             surnameMessage = $"Surname: {user1.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value}";
         }
         else
         {
-            authMessage = "Пожалуйста, войдите или зарегистрируйтесь";
+            authMessage = "You are not authorized";
         }
     }
 }

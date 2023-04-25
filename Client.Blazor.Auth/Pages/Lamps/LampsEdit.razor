@@ -6,9 +6,8 @@
 @using MySmartHome.DAL.Repositories.Interfaces
 @using Client.Blazor.Auth.Data
 @using System.Security.Claims
-@using WebApiClients.Repositories
+@using MySmartHome.DAL.Repositories
 @inject IEntityRepository<Lamps> repo
-@inject ITokenStorage tokenStorage
 @inject AuthenticationStateProvider provider
 
 <h3>Lamp Edit</h3>
@@ -74,10 +73,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         webRepo = (WebRepository<Lamps>)repo;
-        var authState = await provider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        var t = tokenStorage.GetToken(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
-        webRepo.SetDefaultRequestHeaders(t);
+        webRepo.SetDefaultRequestHeaders(provider);
         _id = Guid.Parse(lampId!);
         lamp = await webRepo.GetById(_id);
     }

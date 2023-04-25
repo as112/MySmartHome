@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Client.Blazor.Auth.Data
+namespace MySmartHome.DAL.Models
 {
     public class Token
     {

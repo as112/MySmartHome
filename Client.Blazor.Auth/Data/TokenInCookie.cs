@@ -1,5 +1,5 @@
-﻿
-using NuGet.Common;
+﻿using MySmartHome.DAL.Data;
+using MySmartHome.DAL.Models;
 
 namespace Client.Blazor.Auth.Data
 {
@@ -14,6 +14,7 @@ namespace Client.Blazor.Auth.Data
         }
         public string? GetToken(string username)
         {
+            if (string.IsNullOrEmpty(username)) return null;
             var tokenName = username.Replace('@', '-');
             return _httpContextAccessor?.HttpContext?.Request?.Cookies?[tokenName];
         }

@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MySmartHome.DAL.Data;
 using MySmartHome.DAL.Entities;
-using MySmartHome.DAL.Repositories;
 using MySmartHome.DAL.Repositories.Interfaces;
 using System.Linq.Expressions;
 
-namespace MySmartHomeWebApi.Data
+namespace MySmartHome.DAL.Repositories
 {
     public class DbEntityRepository<T> : DbBaseRepository<T>, IEntityRepository<T> where T : Entity, new()
     {

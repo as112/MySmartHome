@@ -11,11 +11,11 @@ namespace MySmartHomeWebApi.ApiControllers
     //[Authorize]
     public class HistoryController : ControllerBase
     {
-        private readonly DbHistoryRepository<HistoryData> _repository;
+        private readonly IHistoryRepository<HistoryData> _repository;
 
         public HistoryController(IHistoryRepository<HistoryData> repository)
         {
-            _repository = (DbHistoryRepository<HistoryData>)repository;
+            _repository = repository;
         }
 
         // POST: api/History/name
@@ -62,41 +62,20 @@ namespace MySmartHomeWebApi.ApiControllers
             return Ok(await _repository.DeleteAllUntilDate(daysAgo));
         }
 
-        //// POST: api/History/filter
-        //[HttpPost("filter")]
-        //public async Task<ActionResult> GetData([FromBody] string name, int hourAgoFrom, int hourAgoTo)
-        //{
-        //    if(hourAgoFrom < hourAgoTo)
-        //        return NoContent();
-        //    var result = await _repository
-        //        .GetAllWithPredicate(s =>
-        //            s.Name == name &&
-        //            s.DateTimeUpdate >= DateTime.Now.AddHours(-1 * hourAgoFrom) &&
-        //            s.DateTimeUpdate <= DateTime.Now.AddHours(-1 * hourAgoTo))
-        //        .ConfigureAwait(false);
-        //    return Ok(result);
-        //}
-
         // POST: api/History/filter
         [HttpPost("filter")]
-        public async Task<ActionResult> GetData(DataForFilter data)
+        public async Task<ActionResult> GetData(DataForHistoryFilter data)
         {
-            if (data.hourAgoFrom < data.hourAgoTo)
+            if (data.HourAgoFrom < data.HourAgoTo)
                 return NoContent();
             var result = await _repository
                 .GetAllWithPredicate(s =>
-                    s.Name == data.name &&
-                    s.DateTimeUpdate >= DateTime.Now.ToUniversalTime().AddHours(-1 * data.hourAgoFrom) &&
-                    s.DateTimeUpdate <= DateTime.Now.ToUniversalTime().AddHours(-1 * data.hourAgoTo))
+                    s.Name == data.Name &&
+                    s.DateTimeUpdate >= DateTime.Now.ToUniversalTime().AddHours(-1 * data.HourAgoFrom) &&
+                    s.DateTimeUpdate <= DateTime.Now.ToUniversalTime().AddHours(-1 * data.HourAgoTo))
                 .ConfigureAwait(false);
             return Ok(result);
         }
 
-    }
-    public class DataForFilter
-    {
-        public string name { get; set; }
-        public int hourAgoFrom { get; set; }
-        public int hourAgoTo { get; set; }
     }
 }

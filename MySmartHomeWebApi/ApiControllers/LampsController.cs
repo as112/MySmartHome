@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MySmartHome.DAL.Models;
 using MySmartHome.DAL.Repositories.Interfaces;
-using MySmartHomeWebApi.Data;
 using MySmartHomeWebApi.Servises;
 
 namespace MySmartHomeWebApi.ApiControllers
@@ -13,17 +12,18 @@ namespace MySmartHomeWebApi.ApiControllers
     public class LampsController : ControllerBase
     {
         private readonly ILogger<LampsController> _logger;
-        private readonly DbEntityRepository<Lamps> _repository;
+        private readonly IEntityRepository<Lamps> _repository;
         private readonly MQTTClient _mqtt;
 
         public LampsController(ILogger<LampsController> logger, IEntityRepository<Lamps> repository, MQTTClient mqtt)
         {          
             _logger = logger;
-            _repository = (DbEntityRepository<Lamps>)repository;
+            _repository = repository;
             _mqtt = mqtt;
         }
 
         // GET api/<LampController>
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -33,6 +33,7 @@ namespace MySmartHomeWebApi.ApiControllers
 
 
         // GET api/<LampController>/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {

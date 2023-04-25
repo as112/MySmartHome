@@ -1,4 +1,6 @@
-﻿namespace Client.Blazor.Auth.Data
+﻿using MySmartHome.DAL.Models;
+
+namespace MySmartHome.DAL.Data
 {
     public interface ITokenStorage
     {

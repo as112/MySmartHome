@@ -3,11 +3,12 @@
 @using System.Net.Http.Json
 @using System.Threading.Tasks
 @using MySmartHome.DAL.Models
+@using MySmartHome.DAL.Data
 @using MySmartHome.DAL.Repositories.Interfaces
 @using Client.Blazor.Auth.Data
 @using System.Security.Claims
 @using System.Globalization;
-@using WebApiClients.Repositories
+@using MySmartHome.DAL.Repositories
 @using Plotly.Blazor.LayoutLib
 @using Plotly.Blazor.Traces.ScatterLib
 @using Title = Plotly.Blazor.LayoutLib.Title
@@ -16,7 +17,6 @@
 
 @inject HttpClient Http
 @inject IEntityRepository<Sensors> repo
-@inject ITokenStorage tokenStorage
 @inject AuthenticationStateProvider provider
 
 <h3>Sensor Details</h3>
@@ -128,13 +128,12 @@ else
         }
     }
 
-    private string _token;
+    WebRepository<Sensors> webRepo;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await provider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        _token = tokenStorage.GetToken(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
+        webRepo = (WebRepository<Sensors>)repo;
+        webRepo.SetDefaultRequestHeaders(provider);
 
         DateFrom = DateTime.Now.AddDays(-1);
 
@@ -157,9 +156,6 @@ else
     private async Task<Sensors> GetSensor(string id)
     {
         var _id = Guid.Parse(id);
-        var webRepo = (WebRepository<Sensors>)repo;
-
-        webRepo.SetDefaultRequestHeaders(_token);
 
         var sensor = await webRepo.GetById(_id);
 
@@ -168,15 +164,7 @@ else
 
     private async Task<(double[] values, DateTime[] times)> GetData(string sensorName, int _hourAgoFrom, int _hourAgoTo)
     {
-        Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers
-            .AuthenticationHeaderValue("Bearer", _token);
-
-        var filter = new
-        {
-            name = sensorName,
-            hourAgoFrom = _hourAgoFrom,
-            hourAgoTo = _hourAgoTo
-        };
+        var filter = new DataForHistoryFilter(sensorName, _hourAgoFrom, _hourAgoTo);
         var response = await Http.PostAsJsonAsync($"History/filter", filter).ConfigureAwait(false);
 
         sensorHistory = response.StatusCode != System.Net.HttpStatusCode.OK ? Enumerable.Empty<HistoryData>() :

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MySmartHomeWebApi.Data;
+using MySmartHome.DAL.Data;
 using Microsoft.AspNetCore.Authorization;
 using MySmartHome.DAL.Models;
 using MySmartHome.DAL.Repositories.Interfaces;
@@ -13,12 +13,12 @@ namespace MySmartHomeWebApi.ApiControllers
     public class RoomsController : ControllerBase
     {
         private readonly ILogger<RoomsController> _logger;
-        private readonly DbEntityRepository<Rooms> _repository;
+        private readonly IEntityRepository<Rooms> _repository;
 
         public RoomsController(ILogger<RoomsController> logger, IEntityRepository<Rooms> repository)
         {
             _logger = logger;
-            _repository = (DbEntityRepository<Rooms>)repository;
+            _repository = repository;
         }
 
         // GET: api/<RoomsController>

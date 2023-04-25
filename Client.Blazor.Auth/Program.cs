@@ -3,9 +3,10 @@ using Client.Blazor.Auth.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MySmartHome.DAL.Data;
 using MySmartHome.DAL.Models;
+using MySmartHome.DAL.Repositories;
 using MySmartHome.DAL.Repositories.Interfaces;
-using WebApiClients.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +18,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-//builder.Services.AddIdentityCore<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-//    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -33,7 +32,7 @@ builder.Services.AddRazorPages().AddNewtonsoftJson(options =>
 );
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-builder.Services.AddTransient<Token>();builder.Services.AddSingleton<ITokenStorage, TokenInCookie>();
+builder.Services.AddSingleton<ITokenStorage, TokenInCookie>();
 
 var webApiAddr = builder.Configuration.GetSection("WebApi").Value;
 builder.Services.AddTransient(sp =>

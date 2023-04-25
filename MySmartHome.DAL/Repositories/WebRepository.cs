@@ -1,23 +1,42 @@
-﻿using MySmartHome.DAL.Entities;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using MySmartHome.DAL.Data;
+using MySmartHome.DAL.Entities;
 using MySmartHome.DAL.Repositories.Interfaces;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http.Json;
+using System.Security.Claims;
 
-namespace WebApiClients.Repositories
+namespace MySmartHome.DAL.Repositories
 {
     public class WebRepository<T> : IEntityRepository<T> where T : Entity, new()
     {
         private readonly HttpClient _client;
+        private readonly ITokenStorage _tokenStorage;
 
-        public WebRepository(HttpClient client)
+        public WebRepository(HttpClient client, ITokenStorage tokenStorage)
         {
             _client = client;
+            _tokenStorage = tokenStorage;
         }
 
-        public void SetDefaultRequestHeaders(string token)
+        public async void SetDefaultRequestHeaders(AuthenticationStateProvider provider)
         {
+            var authState = await provider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            var token = TryGetToken(user);
             _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
+        private string? TryGetToken(ClaimsPrincipal? user)
+        {
+            try
+            {
+                return _tokenStorage.GetToken(user?.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task<T> Add(T item, CancellationToken Cancel = default)

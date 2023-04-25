@@ -6,10 +6,9 @@
 @using MySmartHome.DAL.Repositories.Interfaces
 @using Client.Blazor.Auth.Data
 @using System.Security.Claims
-@using WebApiClients.Repositories
+@using MySmartHome.DAL.Repositories
 
 @inject IEntityRepository<Sensors> repo
-@inject ITokenStorage tokenStorage
 @inject AuthenticationStateProvider provider
 <h3>Sensors</h3>
 
@@ -17,14 +16,24 @@
 {
     <p><em>Loading...</em></p>
 }
-else
+else if (sensors.Count() == 0)
 {
     <div class="col-md-6">
-        <a href='/sensors/add' class="btn btn-primary" role="button">
-            <i class="fas fa-user-plus"></i>
-            Add new sensor
-        </a>
+        Access denied
     </div>
+}
+else
+{
+    @if (isAuthorized)
+    {
+        <div class="col-md-6">
+            <a href='/sensors/add' class="btn btn-primary" role="button">
+                <i class="fas fa-user-plus"></i>
+                Add new sensor
+            </a>
+        </div>
+    }
+    
     <table class="table">
         <thead>
             <tr>
@@ -47,10 +56,13 @@ else
                     <td>@sensor.DateTimeUpdate.ToLocalTime()</td>
                     <td>@sensor.TopicUp</td>
                     <td>@sensor.RoomName</td>
-                    <td>
-                        <a href="sensors/edit/@sensor.Id">Edit</a> |
-                        <a href="sensors/delete/@sensor.Id">Delete</a>
-                    </td>
+                    @if (isAuthorized)
+                    {
+                        <td>
+                            <a href="sensors/edit/@sensor.Id">Edit</a> |
+                            <a href="sensors/delete/@sensor.Id">Delete</a>
+                        </td>
+                    }
                 </tr>
             }
         </tbody>
@@ -61,14 +73,14 @@ else
 
     IEnumerable<Sensors>? sensors;
     WebRepository<Sensors> webRepo;
+    bool isAuthorized = false;
 
     protected override async Task OnInitializedAsync()
     {
         webRepo = (WebRepository<Sensors>)repo;
         var authState = await provider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        var t = tokenStorage.GetToken(user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value!);
-        webRepo.SetDefaultRequestHeaders(t);
+        isAuthorized = authState.User.Identity?.IsAuthenticated ?? false;
+        webRepo.SetDefaultRequestHeaders(provider);
         sensors = await webRepo.GetAll();
         sensors = sensors.OrderBy(s => s.Name);
         ReloadData();

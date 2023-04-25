@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using MySmartHomeWebApi.Data;
 using MySmartHomeWebApi.Servises;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using MySmartHome.DAL.Data;
 using MySmartHome.DAL.Repositories.Interfaces;
 using MySmartHome.DAL.Models;
+using MySmartHome.DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

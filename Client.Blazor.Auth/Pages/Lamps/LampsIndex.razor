@@ -19,17 +19,20 @@
 }
 else
 {
-    <div class="col-md-6">
-        <a href='/lamps/add' class="btn btn-primary" role="button">
-            <i class="fas fa-user-plus"></i>
-            Add new lamp
-        </a>
-    </div>
+    if (!isDisabled)
+    {
+        <div class="col-md-6">
+            <a href='/lamps/add' class="btn btn-primary" role="button">
+                <i class="fas fa-user-plus"></i>
+                Add new lamp
+            </a>
+        </div>
+    }
     <table class="table">
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Status</th>
+                <th>Control</th>
                 <th>Time Update</th>
                 <th>Topic Up</th>
                 <th>Topic Down</th>
@@ -44,8 +47,8 @@ else
                     <td>@lamp.Name</td>
                     <td>
                         <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                            <button type="button" class="btn btn-success" @onclick="@(() => SwitchLamp(lamp.Id, true))" disable="@isEnable">Вкл</button>
-                            <button type="button" class="btn btn-warning" @onclick="@(() => SwitchLamp(lamp.Id, false))">Выкл</button>
+                            <button type="button" class="btn btn-success" @onclick="@(() => SwitchLamp(lamp.Id, true))" disabled="@isDisabled">Вкл</button>
+                            <button type="button" class="btn btn-warning" @onclick="@(() => SwitchLamp(lamp.Id, false))" disabled="@isDisabled">Выкл</button>
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" role="switch" @bind=@lamp.Status disabled />
                             </div>
@@ -56,9 +59,16 @@ else
                     <td>@lamp.TopicDown</td>
                     <td>@lamp.RoomName</td>
                     <td>
-                        <a href="lamps/edit/@lamp.Id">Edit</a> |
+                        @if (!isDisabled)
+                        {
+                            <a href="lamps/edit/@lamp.Id">Edit</a>
+                        }
+         |
                         <a href="lamps/details/@lamp.Id">Details</a> |
-                        <a href="lamps/delete/@lamp.Id">Delete</a>
+                        @if (!isDisabled)
+                        {
+                            <a href="lamps/delete/@lamp.Id">Delete</a>
+                        }
                     </td>
                 </tr>
             }
@@ -70,14 +80,17 @@ else
 
     IEnumerable<Lamps>? lamps;
     WebRepository<Lamps> webRepo;
-    string isEnable;
+    bool isDisabled;
     protected override async Task OnInitializedAsync()
     {
         webRepo = (WebRepository<Lamps>)repo;
         webRepo.SetDefaultRequestHeaders(provider);
         lamps = await webRepo.GetAll();
         lamps = lamps.OrderBy(s => s.Name);
-        isEnable = lamps.Count() > 0 ? "enable" : "disable";
+
+        var authState = await provider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        isDisabled = !user.Identity.IsAuthenticated;
     }
 
     public async Task SwitchLamp(Guid id, bool status)

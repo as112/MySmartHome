@@ -44,10 +44,8 @@ namespace MySmartHomeWebApi.Servises
             
             var context = new FakeContext(_connectionString);
             var allLamps = await context.Lamps.AsQueryable().ToArrayAsync();
-            //var allLamps = await _lampRepo.GetAll();
             _lampsTopics = allLamps.Select(s => s.TopicDown!) ?? Enumerable.Empty<string>();
             var allSensors = await context.Sensors.AsQueryable().ToArrayAsync();
-            //var allSensors = await _sensorRepo.GetAll();
             _sensorsTopics = allSensors.Select(s => s.TopicUp) ?? Enumerable.Empty<string>();
         }
         public static async Task Run()
@@ -124,9 +122,7 @@ namespace MySmartHomeWebApi.Servises
         {
             var context = new FakeContext(_connectionString);
             var sensors = await context.HistoryData.AsQueryable().Where(s => s.Topic == topic).ToArrayAsync();
-            //var sensors = await historyRepo.GetAllByTopic(topic);
             var sensor = sensors.Count() == 0 ? new HistoryData { Topic = topic } : sensors.OrderBy(s => s.DateTimeUpdate).Last();
-            //var sensorsByName = await sensorRepo.GetWithInclude(s => s.TopicUp == topic, null);
             var sensorsByName = await context.Sensors.AsQueryable().Where(s => s.TopicUp == topic).ToArrayAsync();
             var sensorByName = sensorsByName.OrderBy(s => s.DateTimeUpdate).Last();
 
@@ -140,13 +136,11 @@ namespace MySmartHomeWebApi.Servises
                 newSensor.Value = value;
                 await context.HistoryData.AddAsync(newSensor);
                 await context.SaveChangesAsync();
-                //await historyRepo.Add(newSensor);
                 _logger.LogError($"{topic} - {DateTime.Now.ToUniversalTime() - sensor.DateTimeUpdate}");
             }
 
             sensorByName.DateTimeUpdate = DateTime.Now;
             sensorByName.Value = value;
-            //await sensorRepo.Update(sensorByName);
             context.Sensors.Update(sensorByName);
             await context.SaveChangesAsync();
             _logger.LogError($"Sensor {sensorByName.Name} has been updating");
@@ -156,9 +150,7 @@ namespace MySmartHomeWebApi.Servises
         {
             var context = new FakeContext(_connectionString);
             var lampsFromHistory = await context.HistoryData.AsQueryable().Where(s => s.Topic == topic).ToArrayAsync();
-            //var lampsFromHistory = await historyRepo.GetAllByTopic(topic);
             var lastLampFromHistory = lampsFromHistory.Count() == 0 ? new HistoryData { Topic = topic } : lampsFromHistory.OrderBy(s => s.DateTimeUpdate).Last();
-            //var lampsFromRepo = await lampRepo.GetWithInclude(s => s.TopicDown == topic, null);
             var lampsFromRepo = await context.Lamps.AsQueryable().Where(s => s.TopicDown == topic).ToArrayAsync();
             var lampFromRepo = lampsFromRepo?.OrderBy(s => s.DateTimeUpdate).Last();
 
@@ -176,9 +168,6 @@ namespace MySmartHomeWebApi.Servises
                 context.Lamps.Update(lampFromRepo);
                 await context.HistoryData.AddAsync(newLampForHistory);
                 await context.SaveChangesAsync();
-
-                //await lampRepo.Update(lampFromRepo);
-                //await historyRepo.Add(newLampForHistory);
             }
             else if (value == "1" && lampFromRepo.Status == false)
             {
@@ -186,9 +175,6 @@ namespace MySmartHomeWebApi.Servises
                 context.Lamps.Update(lampFromRepo);
                 await context.HistoryData.AddAsync(newLampForHistory);
                 await context.SaveChangesAsync();
-
-                //await lampRepo.Update(lampFromRepo);
-                //await historyRepo.Add(newLampForHistory);
             }
         }
     }

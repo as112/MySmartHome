@@ -15,6 +15,7 @@ namespace MySmartHome.DAL.Data
         public DbSet<Lamps>? Lamps { get; set; }
         public DbSet<Rooms>? Rooms { get; set; }
         public DbSet<Sensors>? Sensors { get; set; }
+        public DbSet<HistoryData>? HistoryData { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

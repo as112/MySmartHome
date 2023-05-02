@@ -20,14 +20,25 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("MySmartHomeWebApiContext");
-builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Transient, ServiceLifetime.Transient);
-builder.Services.AddDbContext<HistoryContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Transient, ServiceLifetime.Transient);
-builder.Services.AddTransient(typeof(IEntityRepository<>), typeof(DbEntityRepository<>));
-builder.Services.AddTransient<IHistoryRepository<HistoryData>, DbHistoryRepository<HistoryData>>();
+builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<HistoryContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddScoped(typeof(IEntityRepository<>), typeof(DbEntityRepository<>));
+builder.Services.AddScoped<IHistoryRepository<HistoryData>, DbHistoryRepository<HistoryData>>();
 
 var userConnectionString = builder.Configuration.GetConnectionString("UserDbConnection");
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseNpgsql(userConnectionString));
+
+var webApiAddr = builder.Configuration.GetSection("WebApi").Value;
+builder.Services.AddTransient(sp =>
+    new HttpClient
+    {
+        BaseAddress = new Uri(webApiAddr + "/api/")
+    });
+builder.Services.AddHttpClient<IEntityRepository<Lamps>, WebRepository<Lamps>>(client => client.BaseAddress = new Uri(webApiAddr + "/api/Lamps/"));
+builder.Services.AddHttpClient<IEntityRepository<Sensors>, WebRepository<Sensors>>(client => client.BaseAddress = new Uri(webApiAddr + "/api/Sensors/"));
+builder.Services.AddHttpClient<IEntityRepository<Rooms>, WebRepository<Rooms>>(client => client.BaseAddress = new Uri(webApiAddr + "/api/Rooms/"));
+
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -64,13 +75,10 @@ app.Lifetime.ApplicationStarted.Register(async () =>
 {
     var configuration = app.Services.GetRequiredService<IConfiguration>();
     var logger = app.Services.GetRequiredService<ILogger<HistoryData>>();
-    var lampRepo = app.Services.GetRequiredService<IEntityRepository<Lamps>>();
-    var sensorRepo = app.Services.GetRequiredService<IEntityRepository<Sensors>>();
-    var historyRepository = app.Services.GetRequiredService<IHistoryRepository<HistoryData>>();
-
+    
     try
     {
-        await MQTTClient.MqttClientInit(configuration, logger, lampRepo, sensorRepo, historyRepository);
+        await MQTTClient.MqttClientInit(configuration, logger);
         await MQTTClient.Run();
     }
     catch(Exception ex)

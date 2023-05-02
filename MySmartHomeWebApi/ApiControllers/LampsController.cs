@@ -13,13 +13,11 @@ namespace MySmartHomeWebApi.ApiControllers
     {
         private readonly ILogger<LampsController> _logger;
         private readonly IEntityRepository<Lamps> _repository;
-        private readonly MQTTClient _mqtt;
 
-        public LampsController(ILogger<LampsController> logger, IEntityRepository<Lamps> repository, MQTTClient mqtt)
+        public LampsController(ILogger<LampsController> logger, IEntityRepository<Lamps> repository)
         {          
             _logger = logger;
             _repository = repository;
-            _mqtt = mqtt;
         }
 
         // GET api/<LampController>
@@ -57,7 +55,7 @@ namespace MySmartHomeWebApi.ApiControllers
             lamp.DateTimeUpdate = DateTime.Now;
             await _repository.Update(lamp).ConfigureAwait(false);
             var value = lamp.Status ? "1" : "0";
-            await _mqtt.PublishAsync(lamp.TopicUp, value);
+            await MQTTClient.PublishAsync(lamp.TopicUp, value);
             return Ok(lamp);
         }
 

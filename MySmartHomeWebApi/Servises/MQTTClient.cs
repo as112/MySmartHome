@@ -8,28 +8,28 @@ using System.Text;
 
 namespace MySmartHomeWebApi.Servises
 {
-    public class MQTTClient
+    public static class MQTTClient
     {
-        private readonly ILogger<MQTTClient> _logger;
-        private readonly IHistoryRepository<HistoryData> _historyRepository;
-        private readonly IEntityRepository<Lamps> _lampRepo;
-        private readonly IEntityRepository<Sensors> _sensorRepo;
-        private readonly IEnumerable<string> _lampsTopics;
-        private readonly IEnumerable<string> _sensorsTopics;
+        private static ILogger<HistoryData>? _logger;
+        private static IHistoryRepository<HistoryData>? _historyRepository;
+        private static IEntityRepository<Lamps>? _lampRepo;
+        private static IEntityRepository<Sensors>? _sensorRepo;
+        private static IEnumerable<string>? _lampsTopics;
+        private static IEnumerable<string>? _sensorsTopics;
 
-        private MqttFactory _mqttFactory;
-        private IMqttClient _client;
-        public IMqttClient Client { get => _client; private set => _client = value; }
+        private static MqttFactory? _mqttFactory;
+        private static IMqttClient? _client;
+        public static IMqttClient Client { get => _client; private set => _client = value; }
 
-        private string _mqttServer;
-        private int _mqttServerPort;
-        private string _mqttUserName;
-        private string _mqttUserPassword;
-        private string _mqttTopicPrefix;
+        private static string? _mqttServer;
+        private static int _mqttServerPort;
+        private static string? _mqttUserName;
+        private static string? _mqttUserPassword;
+        private static string? _mqttTopicPrefix;
 
-        public MQTTClient(IConfiguration configuration, 
-            ILogger<MQTTClient> logger, 
-            IEntityRepository<Lamps> lampRepo, 
+        public static async Task MqttClientInit(IConfiguration configuration,
+            ILogger<HistoryData> logger,
+            IEntityRepository<Lamps> lampRepo,
             IEntityRepository<Sensors> sensorRepo,
             IHistoryRepository<HistoryData> historyRepository)
         {
@@ -37,23 +37,21 @@ namespace MySmartHomeWebApi.Servises
             _historyRepository = historyRepository;
             _lampRepo = lampRepo;
             _sensorRepo = sensorRepo;
-            var allLamps = _lampRepo.GetAll().Result;
+            var allLamps = await _lampRepo.GetAll();
             _lampsTopics = allLamps.Select(s => s.TopicDown!) ?? Enumerable.Empty<string>();
-            var allSensors = _sensorRepo.GetAll().Result;
+            var allSensors = await _sensorRepo.GetAll();
             _sensorsTopics = allSensors.Select(s => s.TopicUp) ?? Enumerable.Empty<string>();
 
             _mqttFactory = new MqttFactory();
             _client = _mqttFactory.CreateMqttClient();
 
-            _mqttServer = (string)configuration.GetValue(typeof(string), "MqttServer");
-            _mqttServerPort = (int)configuration.GetValue(typeof(int), "MqttServerPort");
-            _mqttUserName = (string)configuration.GetValue(typeof(string), "MqttUserName");
-            _mqttUserPassword = (string)configuration.GetValue(typeof(string), "MqttUserPassword");
-            _mqttTopicPrefix = (string)configuration.GetValue(typeof(string), "MqttTopicPrefix");
-
-            Task.Run(() => Run());
+            _mqttServer = configuration.GetValue<string>("MqttServer") ?? string.Empty;
+            _mqttServerPort = configuration.GetValue<int>("MqttServerPort");
+            _mqttUserName = configuration.GetValue<string>("MqttUserName") ?? string.Empty;
+            _mqttUserPassword = configuration.GetValue<string>("MqttUserPassword") ?? string.Empty;
+            _mqttTopicPrefix = configuration.GetValue<string>("MqttTopicPrefix") ?? string.Empty;
         }
-        private async Task Run()
+        public static async Task Run()
         {
             while (true)
             {
@@ -63,7 +61,7 @@ namespace MySmartHomeWebApi.Servises
             }
         }
 
-        public async Task PublishAsync(string topic, string value)
+        public static async Task PublishAsync(string topic, string value)
         {
             var applicationMessage = new MqttApplicationMessageBuilder()
                 .WithTopic(topic)
@@ -71,7 +69,7 @@ namespace MySmartHomeWebApi.Servises
                 .Build();
             await Client.PublishAsync(applicationMessage, CancellationToken.None);
         }
-        private async Task ConnectAndSubscribeAsync()
+        private static async Task ConnectAndSubscribeAsync()
         {
             try
             {
@@ -106,13 +104,13 @@ namespace MySmartHomeWebApi.Servises
             }
         }
 
-        private async Task Client_DisconnectedAsync(MqttClientDisconnectedEventArgs arg)
+        private static async Task Client_DisconnectedAsync(MqttClientDisconnectedEventArgs arg)
         {
             _logger.LogInformation($"Disconnection has occured. Trying to reconnect...");
             await Task.Delay(5000);
         }
 
-        private async Task Client_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
+        private static async Task Client_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
         {
             if (_lampsTopics.Contains(arg.ApplicationMessage.Topic))
             {
@@ -123,7 +121,7 @@ namespace MySmartHomeWebApi.Servises
                 await AddToDbSensor(_sensorRepo, _historyRepository, arg.ApplicationMessage.Topic, Encoding.UTF8.GetString(arg.ApplicationMessage.Payload));
             }
         }
-        private async Task AddToDbSensor(IEntityRepository<Sensors> sensorRepo, IHistoryRepository<HistoryData> historyRepo, string topic, string value)
+        private static async Task AddToDbSensor(IEntityRepository<Sensors> sensorRepo, IHistoryRepository<HistoryData> historyRepo, string topic, string value)
         {
             var sensors = await historyRepo.GetAllByTopic(topic);
             var sensor = sensors.Count() == 0 ? new HistoryData { Topic = topic } : sensors.OrderBy(s => s.DateTimeUpdate).Last();
@@ -151,7 +149,7 @@ namespace MySmartHomeWebApi.Servises
             _logger.LogError($"Sensor {sensorByName.Name} has been updating");
         }
 
-        private async Task AddToDbLamp(IEntityRepository<Lamps> lampRepo, IHistoryRepository<HistoryData> historyRepo, string topic, string value)
+        private static async Task AddToDbLamp(IEntityRepository<Lamps> lampRepo, IHistoryRepository<HistoryData> historyRepo, string topic, string value)
         {
             var lampsFromHistory = await historyRepo.GetAllByTopic(topic);
             var lastLampFromHistory = lampsFromHistory.Count() == 0 ? new HistoryData { Topic = topic } : lampsFromHistory.OrderBy(s => s.DateTimeUpdate).Last();

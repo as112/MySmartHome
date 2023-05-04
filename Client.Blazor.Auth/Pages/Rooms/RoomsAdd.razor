@@ -82,8 +82,8 @@
         webRepoLamp = (WebRepository<Lamps>)lampRepo;
         var webRepoSensor = (WebRepository<Sensors>)sensorRepo;
 
-        webRepoLamp.SetDefaultRequestHeaders(provider);
-        webRepoSensor.SetDefaultRequestHeaders(provider);
+        await webRepoLamp.SetDefaultRequestHeaders(provider);
+        await webRepoSensor.SetDefaultRequestHeaders(provider);
 
         lamps = await webRepoLamp.GetAll();
         sensors = await webRepoSensor.GetAll();
@@ -93,7 +93,7 @@
     protected async Task AddRoom()
     {
         var webRepo = (WebRepository<Rooms>)roomRepo;
-        webRepo.SetDefaultRequestHeaders(provider);
+        await webRepo.SetDefaultRequestHeaders(provider);
 
         room.Id = Guid.NewGuid();
         //room.Lamps = lamps.Where(s => selectedLamps.Contains(s.Name)).ToList();

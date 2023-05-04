@@ -62,7 +62,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         webRepo = (WebRepository<Rooms>)repo;
-        webRepo.SetDefaultRequestHeaders(provider);
+        await webRepo.SetDefaultRequestHeaders(provider);
         rooms = await webRepo.GetAll();
         rooms = rooms.OrderBy(s => s.Name);
     }

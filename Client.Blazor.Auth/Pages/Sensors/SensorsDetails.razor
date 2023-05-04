@@ -25,34 +25,6 @@
 {
     <p><em>Loading...</em></p>
 }
-else
-{
-@*
-    <div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>Time Update</th>
-                    <th>Topic</th>
-                    <th> </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var sensor in sensorHistory)
-                {
-                    <tr>
-                        <td>@sensor.Name</td>
-                        <td>@sensor.Value</td>
-                        <td>@sensor.DateTimeUpdate.ToLocalTime()</td>
-                        <td>@sensor.Topic</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>*@
-}
 
 <PlotlyChart style="height: 60vh; min-height: 350px" @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart" />
 
@@ -66,6 +38,7 @@ else
     <button class="btn btn-primary" @onclick="@(() => GetDataForXHours(hoursFrom, hoursTo))">Обновить</button>
 </div>
 <br/>
+
 <div>
     <a href="sensors">Back to List</a>
 </div>
@@ -133,7 +106,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         webRepo = (WebRepository<Sensors>)repo;
-        webRepo.SetDefaultRequestHeaders(provider);
+        await webRepo.SetDefaultRequestHeaders(provider);
 
         DateFrom = DateTime.Now.AddDays(-1);
 

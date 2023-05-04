@@ -52,7 +52,7 @@
     protected async Task AddLamp()
     {
         var webRepo = (WebRepository<Lamps>)repo;
-        webRepo.SetDefaultRequestHeaders(provider);
+        await webRepo.SetDefaultRequestHeaders(provider);
 
         lamp.Id = Guid.NewGuid();
         lamp.DateTimeUpdate = DateTime.Now;

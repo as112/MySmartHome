@@ -78,9 +78,9 @@ else
     protected override async Task OnInitializedAsync()
     {
         webRepo = (WebRepository<Sensors>)repo;
-        var authState = await provider.GetAuthenticationStateAsync();
-        isAuthorized = authState.User.Identity?.IsAuthenticated ?? false;
-        webRepo.SetDefaultRequestHeaders(provider);
+        //var authState = await provider.GetAuthenticationStateAsync();
+        //isAuthorized = authState.User.Identity?.IsAuthenticated ?? false;
+        isAuthorized = await webRepo.SetDefaultRequestHeaders(provider);
         sensors = await webRepo.GetAll();
         sensors = sensors.OrderBy(s => s.Name);
         ReloadData();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MQTTnet;
 using MQTTnet.Client;
 using MySmartHome.DAL.Data;
@@ -121,44 +122,50 @@ namespace MySmartHomeWebApi.Servises
         private static async Task AddToDbSensor(string topic, string value)
         {
             var context = new FakeContext(_connectionString);
-            var sensors = await context.HistoryData.AsQueryable().Where(s => s.Topic == topic).ToArrayAsync();
-            var sensor = sensors.Count() == 0 ? new HistoryData { Topic = topic } : sensors.OrderBy(s => s.DateTimeUpdate).Last();
-            var sensorsByName = await context.Sensors.AsQueryable().Where(s => s.TopicUp == topic).ToArrayAsync();
-            var sensorByName = sensorsByName.OrderBy(s => s.DateTimeUpdate).Last();
+            var sensor = await context.HistoryData
+                .AsQueryable()
+                .Where(s => s.Topic == topic)
+                .OrderByDescending(s => s.DateTimeUpdate)
+                .FirstOrDefaultAsync();
 
+            var sensorByName = await context.Sensors
+                .AsQueryable()
+                .Where(s => s.TopicUp == topic)
+                .FirstOrDefaultAsync();
+            
             if (DateTime.Now.ToUniversalTime().AddMinutes(-1) >= sensor.DateTimeUpdate)
             {
                 var newSensor = new HistoryData();
                 newSensor.Id = Guid.NewGuid();
                 newSensor.Name = sensorByName.Name;
                 newSensor.DateTimeUpdate = DateTime.Now;
-                newSensor.Topic = sensor.Topic;
+                newSensor.Topic = sensorByName.TopicUp;
                 newSensor.Value = value;
                 await context.HistoryData.AddAsync(newSensor);
-                await context.SaveChangesAsync();
-                _logger.LogError($"{topic} - {DateTime.Now.ToUniversalTime() - sensor.DateTimeUpdate}");
+                _logger.LogInformation($"{topic} - {DateTime.Now.ToUniversalTime() - sensor.DateTimeUpdate}");
             }
 
             sensorByName.DateTimeUpdate = DateTime.Now;
             sensorByName.Value = value;
             context.Sensors.Update(sensorByName);
             await context.SaveChangesAsync();
-            _logger.LogError($"Sensor {sensorByName.Name} has been updating");
+            _logger.LogInformation($"Sensor {sensorByName.Name} has been updating");
         }
 
         private static async Task AddToDbLamp(string topic, string value)
         {
             var context = new FakeContext(_connectionString);
-            var lampsFromHistory = await context.HistoryData.AsQueryable().Where(s => s.Topic == topic).ToArrayAsync();
-            var lastLampFromHistory = lampsFromHistory.Count() == 0 ? new HistoryData { Topic = topic } : lampsFromHistory.OrderBy(s => s.DateTimeUpdate).Last();
-            var lampsFromRepo = await context.Lamps.AsQueryable().Where(s => s.TopicDown == topic).ToArrayAsync();
-            var lampFromRepo = lampsFromRepo?.OrderBy(s => s.DateTimeUpdate).Last();
 
+            var lampFromRepo = await context.Lamps
+                .AsQueryable()
+                .Where(s => s.TopicDown == topic)
+                .FirstOrDefaultAsync();
+            
             var newLampForHistory = new HistoryData();
             newLampForHistory.Id = Guid.NewGuid();
             newLampForHistory.DateTimeUpdate = DateTime.Now;
             newLampForHistory.Name = lampFromRepo.Name;
-            newLampForHistory.Topic = lastLampFromHistory.Topic;
+            newLampForHistory.Topic = lampFromRepo.TopicDown;
             newLampForHistory.Value = value;
 
             lampFromRepo.DateTimeUpdate = DateTime.Now;

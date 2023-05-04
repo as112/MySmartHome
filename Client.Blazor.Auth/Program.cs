@@ -35,7 +35,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuth
 builder.Services.AddSingleton<ITokenStorage, TokenInCookie>();
 
 var webApiAddr = builder.Configuration.GetSection("WebApi").Value;
-builder.Services.AddTransient(sp =>
+builder.Services.AddScoped(sp =>
     new HttpClient
     {
         BaseAddress = new Uri(webApiAddr + "/api/")

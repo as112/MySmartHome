@@ -116,15 +116,15 @@ else
     protected override async Task OnInitializedAsync()
     {
         var webRepo = (WebRepository<Lamps>)repo;
-        webRepo.SetDefaultRequestHeaders(provider);
+        isDisabled = !(await webRepo.SetDefaultRequestHeaders(provider));
         _id = Guid.Parse(lampId!);
         lamp = await webRepo.GetById(_id);
         lampStatus = lamp.Status ? "On" : "Off";
         lampHistory = await GetData(lamp.Name, 24 * 7, 0);
 
-        var authState = await provider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        isDisabled = !user.Identity.IsAuthenticated;
+        //var authState = await provider.GetAuthenticationStateAsync();
+        //var user = authState.User;
+        //isDisabled = !user.Identity.IsAuthenticated;
     }
 
     private async Task<IEnumerable<HistoryData>?> GetData(string lampName, int _hourAgoFrom, int _hourAgoTo)

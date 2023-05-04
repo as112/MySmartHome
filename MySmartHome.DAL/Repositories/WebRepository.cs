@@ -20,12 +20,13 @@ namespace MySmartHome.DAL.Repositories
             _tokenStorage = tokenStorage;
         }
 
-        public async void SetDefaultRequestHeaders(AuthenticationStateProvider provider)
+        public async Task<bool> SetDefaultRequestHeaders(AuthenticationStateProvider provider)
         {
             var authState = await provider.GetAuthenticationStateAsync();
             var user = authState.User;
             var token = TryGetToken(user);
             _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            return !string.IsNullOrEmpty(token);
         }
         private string? TryGetToken(ClaimsPrincipal? user)
         {

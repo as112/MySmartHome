@@ -79,7 +79,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         webRepo = (WebRepository<Lamps>)repo;
-        webRepo.SetDefaultRequestHeaders(provider);
+        await webRepo.SetDefaultRequestHeaders(provider);
         _id = Guid.Parse(lampId!);
         lamp = await webRepo.GetById(_id);
     }

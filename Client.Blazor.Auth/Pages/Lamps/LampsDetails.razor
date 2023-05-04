@@ -11,7 +11,6 @@
 
 @inject HttpClient Http
 @inject IEntityRepository<Lamps> repo
-@inject IHistoryRepository<HistoryData> historyRepo
 @inject AuthenticationStateProvider provider
 
 <h3>Lamp Details</h3>
@@ -117,35 +116,15 @@ else
     protected override async Task OnInitializedAsync()
     {
         var webRepo = (WebRepository<Lamps>)repo;
-        var history = historyRepo;
         isAuthorized = await webRepo.SetDefaultRequestHeaders(provider);
         _id = Guid.Parse(lampId!);
         lamp = await webRepo.GetById(_id);
         lampStatus = lamp.Status ? "On" : "Off";
-        //lampHistory = await GetData(lamp.Name, 24 * 7, 0);
-        lampHistory = await historyRepo.GetLastNByName(lamp.Name, 6);
+        lampHistory = await GetData(lamp.Name, 8);
     }
 
-    //private async Task<IEnumerable<HistoryData>?> GetData(string lampName, int _hourAgoFrom, int _hourAgoTo)
-    //{
-    //    Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers
-    //        .AuthenticationHeaderValue("Bearer", _token);
-
-    //    var filter = new
-    //    {
-    //        name = lampName,
-    //        hourAgoFrom = _hourAgoFrom,
-    //        hourAgoTo = _hourAgoTo
-    //    };
-    //    var response = await Http.PostAsJsonAsync($"History/filter", filter).ConfigureAwait(false);
-
-    //    lampHistory = response.StatusCode != System.Net.HttpStatusCode.OK ? Enumerable.Empty<HistoryData>() :
-    //        await response
-    //           .EnsureSuccessStatusCode()
-    //           .Content
-    //           .ReadFromJsonAsync<IEnumerable<HistoryData>>()
-    //           .ConfigureAwait(false);
-    //    return lampHistory.OrderBy(s => s.DateTimeUpdate);
-
-    //}
+    private async Task<IEnumerable<HistoryData>?> GetData(string lampName, int take)
+    {
+        return await Http.GetFromJsonAsync<IEnumerable<HistoryData>>($"History/last/{lampName}/{take}");
+    }
 }

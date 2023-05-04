@@ -39,6 +39,12 @@ namespace MySmartHomeWebApi.ApiControllers
             return Ok(await _repository.GetLastByName(name));
         }
 
+        // GET: api/History/last/name/7
+        [HttpGet("last/{name}/{take}")]
+        public async Task<ActionResult> GetLastNByName([FromBody] string name, int take)
+        {
+            return Ok(await _repository.GetLastNByName(name, take));
+        }
         // POST: api/History
         [HttpPost]
         public async Task<ActionResult> PostHistoryData(HistoryData historyData)

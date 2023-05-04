@@ -12,5 +12,6 @@ namespace MySmartHome.DAL.Repositories.Interfaces
         Task<IEnumerable<T>?> GetAllWithPredicate(Expression<Func<T, bool>> predicate, CancellationToken Cancel = default);
         Task<IEnumerable<T>?> GetAllByTopic(string topic, CancellationToken Cancel = default);
         Task<IEnumerable<T>?> GetAllByName(string name, CancellationToken Cancel = default);
+        Task<IEnumerable<T>?> GetLastNByName(string name, int take, CancellationToken Cancel = default);
     }
 }

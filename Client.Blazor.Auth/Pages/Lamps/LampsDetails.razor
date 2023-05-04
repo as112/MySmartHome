@@ -11,6 +11,7 @@
 
 @inject HttpClient Http
 @inject IEntityRepository<Lamps> repo
+@inject IHistoryRepository<HistoryData> historyRepo
 @inject AuthenticationStateProvider provider
 
 <h3>Lamp Details</h3>
@@ -89,7 +90,7 @@ else
         </table>
     </div>
 
-    @if (!isDisabled)
+    @if (isAuthorized)
     {
         <div>
             <a href="lamps/edit/@lamp.Id">Edit</a>
@@ -105,7 +106,7 @@ else
 @code {
     IEnumerable<HistoryData>? lampHistory;
     Lamps? lamp;
-    bool isDisabled;
+    bool isAuthorized;
 
     [Parameter]
     public string? lampId { get; set; }
@@ -116,37 +117,35 @@ else
     protected override async Task OnInitializedAsync()
     {
         var webRepo = (WebRepository<Lamps>)repo;
-        isDisabled = !(await webRepo.SetDefaultRequestHeaders(provider));
+        var history = historyRepo;
+        isAuthorized = await webRepo.SetDefaultRequestHeaders(provider);
         _id = Guid.Parse(lampId!);
         lamp = await webRepo.GetById(_id);
         lampStatus = lamp.Status ? "On" : "Off";
-        lampHistory = await GetData(lamp.Name, 24 * 7, 0);
-
-        //var authState = await provider.GetAuthenticationStateAsync();
-        //var user = authState.User;
-        //isDisabled = !user.Identity.IsAuthenticated;
+        //lampHistory = await GetData(lamp.Name, 24 * 7, 0);
+        lampHistory = await historyRepo.GetLastNByName(lamp.Name, 6);
     }
 
-    private async Task<IEnumerable<HistoryData>?> GetData(string lampName, int _hourAgoFrom, int _hourAgoTo)
-    {
-        Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers
-            .AuthenticationHeaderValue("Bearer", _token);
+    //private async Task<IEnumerable<HistoryData>?> GetData(string lampName, int _hourAgoFrom, int _hourAgoTo)
+    //{
+    //    Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers
+    //        .AuthenticationHeaderValue("Bearer", _token);
 
-        var filter = new
-        {
-            name = lampName,
-            hourAgoFrom = _hourAgoFrom,
-            hourAgoTo = _hourAgoTo
-        };
-        var response = await Http.PostAsJsonAsync($"History/filter", filter).ConfigureAwait(false);
+    //    var filter = new
+    //    {
+    //        name = lampName,
+    //        hourAgoFrom = _hourAgoFrom,
+    //        hourAgoTo = _hourAgoTo
+    //    };
+    //    var response = await Http.PostAsJsonAsync($"History/filter", filter).ConfigureAwait(false);
 
-        lampHistory = response.StatusCode != System.Net.HttpStatusCode.OK ? Enumerable.Empty<HistoryData>() :
-            await response
-               .EnsureSuccessStatusCode()
-               .Content
-               .ReadFromJsonAsync<IEnumerable<HistoryData>>()
-               .ConfigureAwait(false);
-        return lampHistory.OrderBy(s => s.DateTimeUpdate);
+    //    lampHistory = response.StatusCode != System.Net.HttpStatusCode.OK ? Enumerable.Empty<HistoryData>() :
+    //        await response
+    //           .EnsureSuccessStatusCode()
+    //           .Content
+    //           .ReadFromJsonAsync<IEnumerable<HistoryData>>()
+    //           .ConfigureAwait(false);
+    //    return lampHistory.OrderBy(s => s.DateTimeUpdate);
 
-    }
+    //}
 }

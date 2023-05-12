@@ -41,7 +41,7 @@ namespace MySmartHomeWebApi.ApiControllers
 
         // GET: api/History/last/name/7
         [HttpGet("last/{name}/{take}")]
-        public async Task<ActionResult> GetLastNByName([FromBody] string name, int take)
+        public async Task<ActionResult> GetLastNByName(string name, int take)
         {
             return Ok(await _repository.GetLastNByName(name, take));
         }

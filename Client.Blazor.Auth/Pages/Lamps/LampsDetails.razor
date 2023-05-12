@@ -121,6 +121,7 @@ else
         lamp = await webRepo.GetById(_id);
         lampStatus = lamp.Status ? "On" : "Off";
         lampHistory = await GetData(lamp.Name, 8);
+        lampHistory = lampHistory.OrderByDescending(s => s.DateTimeUpdate);
     }
 
     private async Task<IEnumerable<HistoryData>?> GetData(string lampName, int take)
